@@ -45,7 +45,7 @@ func (router *MyRouter) AddRoute(name string, methods []string, schema string, h
 	var route = &Route{name, methods, schema, host, port, path, handler}
 	for _, method := range methods {
 		method = strings.ToLower(method)
-		if !stringInArray(SupportedMethods, method) {
+		if !arrayContainsStringNoCase(SupportedMethods, method) {
 			var err = errors.New(strings.Join([]string{"Unsupported method", method}, " "))
 			return router, err
 		}

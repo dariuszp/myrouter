@@ -27,7 +27,7 @@ func (route *Route) SetMethods(methods []string) bool {
 // AddMethod append method to list
 func (route *Route) AddMethod(newMethod string) bool {
 	newMethod = strings.ToLower(newMethod)
-	if !stringInArray(SupportedMethods, newMethod) {
+	if !arrayContainsString(SupportedMethods, newMethod) {
 		return false
 	}
 	route.methods = append(route.methods, newMethod)

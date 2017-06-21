@@ -5,7 +5,7 @@ import (
 )
 
 // Check if string is in given array/slice
-func stringInArray(list []string, item string) bool {
+func arrayContainsString(list []string, item string) bool {
 	for _, element := range list {
 		if element == item {
 			return true
@@ -15,7 +15,7 @@ func stringInArray(list []string, item string) bool {
 }
 
 // Check if lowercase string is in given array/slice
-func stringInArrayNoCase(list []string, item string) bool {
+func arrayContainsStringNoCase(list []string, item string) bool {
 	item = strings.ToLower(item)
 	for _, element := range list {
 		if strings.ToLower(element) == item {
@@ -26,9 +26,9 @@ func stringInArrayNoCase(list []string, item string) bool {
 }
 
 // stringCompareArray compare array of strings
-func stringCompareArray(listA []string, listB []string) bool {
-	for _, a := range listA {
-		if !stringInArray(listB, a) {
+func arrayCompareString(listA []string, listB []string) bool {
+	for _, element := range listA {
+		if !arrayContainsString(listB, element) {
 			return false
 		}
 	}
@@ -37,8 +37,8 @@ func stringCompareArray(listA []string, listB []string) bool {
 
 // stringCompareNoCaseArray compare array of lowercase strings
 func stringCompareNoCaseArray(listA []string, listB []string) bool {
-	for _, a := range listA {
-		if !stringInArrayNoCase(listB, a) {
+	for _, element := range listA {
+		if !arrayContainsStringNoCase(listB, element) {
 			return false
 		}
 	}
