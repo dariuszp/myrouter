@@ -2,9 +2,12 @@ package myrouter
 
 import (
 	"errors"
+	"regexp"
 	"strconv"
 	"strings"
 )
+
+var defaultReadParameterRegexp = "[^/]+"
 
 // GeneratePath fill url pattern with parameters
 func generatePath(path string, parameters map[string]string) (string, error) {
@@ -36,5 +39,28 @@ func generateURL(schema string, host string, port int, path string, parameters m
 }
 
 //GenerateRegExpFromPath turns path to regexp pattern
-func GenerateRegExpFromPath(path string, requirements map[string]string) {
+func GenerateRegExpFromPath(path string, requirements map[string]string) *regexp.Regexp {
+	var parameterEscapedName, pattern, escapedPath, result, patternReplace string
+	var ok bool
+	var parameters = extractParamNames(path)
+
+	escapedPath = regexp.QuoteMeta(path)
+	if len(parameters) == 0 {
+		return regexp.MustCompile(escapedPath)
+	}
+
+	result = escapedPath
+	for _, parameterName := range parameters {
+		pattern, ok = requirements[parameterName]
+		if ok && len(pattern) > 0 {
+			patternReplace = pattern
+		} else {
+			patternReplace = defaultReadParameterRegexp
+		}
+		parameterEscapedName = strings.Join([]string{"\\{", parameterName, "\\}"}, "")
+		patternReplace = strings.Join([]string{"(", patternReplace, ")"}, "")
+		result = strings.Replace(result, parameterEscapedName, patternReplace, -1)
+	}
+
+	return regexp.MustCompile(result)
 }
