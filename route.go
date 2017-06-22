@@ -16,20 +16,38 @@ type Route struct {
 }
 
 // SetMethods replace list of methods
-func (route *Route) SetMethods(methods []string) bool {
-	if !stringCompareNoCaseArray(SupportedMethods, methods) {
-		return false
+func (route *Route) SetMethods(methods []string) (*Route, bool) {
+	if !arrayCompareStringNoCase(SupportedMethods, methods) {
+		return route, false
 	}
-	route.methods = methods
-	return true
+	var result []string
+	for _, value := range methods {
+		result = append(result, strings.ToLower(value))
+	}
+	route.methods = result
+	return route, true
 }
 
 // AddMethod append method to list
-func (route *Route) AddMethod(newMethod string) bool {
+func (route *Route) AddMethod(newMethod string) (*Route, bool) {
 	newMethod = strings.ToLower(newMethod)
 	if !arrayContainsString(SupportedMethods, newMethod) {
-		return false
+		return route, false
 	}
 	route.methods = append(route.methods, newMethod)
-	return true
+	return route, true
+}
+
+func (route *Route) RemoveMethod(toRemove string) (*Route, bool) {
+	var result []string
+	var lenA = len(route.methods)
+	toRemove = strings.ToLower(toRemove)
+	for _, value := range route.methods {
+		if value != toRemove {
+			result = append(result, value)
+		}
+	}
+	var lenB = len(result)
+	route.methods = result
+	return route, lenA != lenB
 }

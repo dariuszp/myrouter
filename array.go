@@ -36,7 +36,7 @@ func arrayCompareString(listA []string, listB []string) bool {
 }
 
 // stringCompareNoCaseArray compare array of lowercase strings
-func stringCompareNoCaseArray(listA []string, listB []string) bool {
+func arrayCompareStringNoCase(listA []string, listB []string) bool {
 	for _, element := range listA {
 		if !arrayContainsStringNoCase(listB, element) {
 			return false

@@ -11,7 +11,7 @@ const (
 var parameterRegexp = regexp.MustCompile(parameterSubpattern)
 
 // Extract parameters from path
-func Extract(path string) []string {
+func extractParamNames(path string) []string {
 	var parameters []string
 
 	var extracted = parameterRegexp.FindAllStringSubmatch(path, -1)

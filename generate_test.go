@@ -5,7 +5,7 @@ import (
 )
 
 func TestGenerateEmptyPath(t *testing.T) {
-	var path, err = GeneratePath("", make(map[string]string))
+	var path, err = generatePath("", make(map[string]string))
 	if err != nil {
 		t.Fail()
 	}
@@ -15,7 +15,7 @@ func TestGenerateEmptyPath(t *testing.T) {
 }
 
 func TestGeneratePathWithMissingParameter(t *testing.T) {
-	var path, err = GeneratePath("/{id}", make(map[string]string))
+	var path, err = generatePath("/{id}", make(map[string]string))
 	if err == nil {
 		t.Fail()
 	}
@@ -25,7 +25,7 @@ func TestGeneratePathWithMissingParameter(t *testing.T) {
 }
 
 func TestGeneratePathWithParameter(t *testing.T) {
-	var path, err = GeneratePath("/{id}", map[string]string{"id": "test"})
+	var path, err = generatePath("/{id}", map[string]string{"id": "test"})
 	if err != nil {
 		t.Fail()
 	}
@@ -35,7 +35,7 @@ func TestGeneratePathWithParameter(t *testing.T) {
 }
 
 func TestGeneratePathWithExtraParameter(t *testing.T) {
-	var path, err = GeneratePath("/{id}", map[string]string{"id": "test", "slug": "poltorak-dariusz"})
+	var path, err = generatePath("/{id}", map[string]string{"id": "test", "slug": "poltorak-dariusz"})
 	if err != nil {
 		t.Fail()
 	}
@@ -45,7 +45,7 @@ func TestGeneratePathWithExtraParameter(t *testing.T) {
 }
 
 func TestGeneratePathWithTwoParameters(t *testing.T) {
-	var path, err = GeneratePath("/{id}/{slug}", map[string]string{"id": "test", "slug": "poltorak-dariusz"})
+	var path, err = generatePath("/{id}/{slug}", map[string]string{"id": "test", "slug": "poltorak-dariusz"})
 	if err != nil {
 		t.Fail()
 	}

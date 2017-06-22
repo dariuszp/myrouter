@@ -43,7 +43,7 @@ func TestStringCompareNotEqualArray(t *testing.T) {
 func TestStringCompareNoCaseEqualArray(t *testing.T) {
 	var a = []string{"a", "b"}
 	var b = []string{"a", "B"}
-	if !stringCompareNoCaseArray(a, b) {
+	if !arrayCompareStringNoCase(a, b) {
 		t.Fail()
 	}
 }

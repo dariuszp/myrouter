@@ -29,7 +29,7 @@ var SupportedMethods = []string{MethodOptions, MethodGet, MethodHead, MethodPost
 
 // MyRouter is just my router :-D
 type MyRouter struct {
-	verbs  map[string]*Route
+	verbs  map[string]map[string]*Route
 	routes map[string]*Route
 }
 
@@ -42,7 +42,11 @@ type MyRouter struct {
 // path - path after the host and port
 // handler - function that will handle this route
 func (router *MyRouter) AddRoute(name string, methods []string, schema string, host string, port int, path string, handler func()) (*MyRouter, error) {
-	var route = &Route{name, methods, schema, host, port, path, handler}
+	var _, ok = router.routes[name]
+	if ok {
+		var err = errors.New(strings.Join([]string{"Route name already registered", name}, " "))
+		return router, err
+	}
 	for _, method := range methods {
 		method = strings.ToLower(method)
 		if !arrayContainsStringNoCase(SupportedMethods, method) {
@@ -50,9 +54,27 @@ func (router *MyRouter) AddRoute(name string, methods []string, schema string, h
 			return router, err
 		}
 	}
+	var route = &Route{name, methods, schema, host, port, path, handler}
 	for _, method := range methods {
-		router.verbs[method] = route
+		router.verbs[method][name] = route
 	}
 	router.routes[name] = route
 	return router, nil
+}
+
+// RemoveRoute remove route by name
+func (router *MyRouter) RemoveRoute(name string) bool {
+	var _, ok = router.routes[name]
+	if !ok {
+		return false
+	}
+
+	for _, method := range router.routes[name].methods {
+		delete(router.verbs[method], name)
+		if len(router.verbs[method]) == 0 {
+			delete(router.verbs, method)
+		}
+	}
+	delete(router.routes, name)
+	return true
 }

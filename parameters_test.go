@@ -4,22 +4,22 @@ import (
 	"testing"
 )
 
-func TestExtractEmptyPath(t *testing.T) {
-	var parameters = Extract("")
+func TestextractParamNamesEmptyPath(t *testing.T) {
+	var parameters = extractParamNames("")
 	if cap(parameters) > 0 {
 		t.Fail()
 	}
 }
 
-func TestExtractRootPath(t *testing.T) {
-	var parameters = Extract("/")
+func TestextractParamNamesRootPath(t *testing.T) {
+	var parameters = extractParamNames("/")
 	if cap(parameters) > 0 {
 		t.Fail()
 	}
 }
 
-func TestExtractSingleArgument(t *testing.T) {
-	var parameters = Extract("/user/{id}")
+func TestextractParamNamesSingleArgument(t *testing.T) {
+	var parameters = extractParamNames("/user/{id}")
 	if cap(parameters) != 1 {
 		t.Fail()
 	}
@@ -28,8 +28,8 @@ func TestExtractSingleArgument(t *testing.T) {
 	}
 }
 
-func TestExtractTwoArguments(t *testing.T) {
-	var parameters = Extract("/user/{id}/{slug}")
+func TestextractParamNamesTwoArguments(t *testing.T) {
+	var parameters = extractParamNames("/user/{id}/{slug}")
 	if cap(parameters) != 2 {
 		t.Fail()
 	}
