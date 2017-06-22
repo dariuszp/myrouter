@@ -2,6 +2,7 @@ package myrouter
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 )
 
@@ -115,6 +116,75 @@ func TestGenerateRegExpFromPathTwoArgs(t *testing.T) {
 		t.Fail()
 	}
 	if !regexp.MatchString(url) {
+		t.Fail()
+	}
+}
+
+func TestGenerateRegExpFromPathNoValues(t *testing.T) {
+	var path = "/api/user/5/client-poltorak-dariusz"
+	var url = "/api/user/5/client-poltorak-dariusz"
+	var expect = []string{}
+
+	var regexp = GenerateRegExpFromPath(path, map[string]string{})
+	var result = regexp.FindAllStringSubmatch(url, -1)
+	var parameters []string
+	for i := 1; i < len(result[0]); i++ {
+		parameters = append(parameters, result[0][i])
+	}
+
+	if !regexp.MatchString(url) {
+		t.Fail()
+	}
+
+	if !arrayCompareString(expect, parameters) {
+		fmt.Print(strings.Join(parameters, ", "))
+		fmt.Print("\n")
+		t.Fail()
+	}
+}
+
+func TestGenerateRegExpFromPathOneValue(t *testing.T) {
+	var path = "/api/user/{id}"
+	var url = "/api/user/5"
+	var expect = []string{"5"}
+
+	var regexp = GenerateRegExpFromPath(path, map[string]string{})
+	var result = regexp.FindAllStringSubmatch(url, -1)
+	var parameters []string
+	for i := 1; i < len(result[0]); i++ {
+		parameters = append(parameters, result[0][i])
+	}
+
+	if !regexp.MatchString(url) {
+		t.Fail()
+	}
+
+	if !arrayCompareString(expect, parameters) {
+		fmt.Print(strings.Join(parameters, ", "))
+		fmt.Print("\n")
+		t.Fail()
+	}
+}
+
+func TestGenerateRegExpFromPathTwoValues(t *testing.T) {
+	var path = "/api/user/{id}/client-{slug}"
+	var url = "/api/user/5/client-poltorak-dariusz"
+	var expect = []string{"5", "poltorak-dariusz"}
+
+	var regexp = GenerateRegExpFromPath(path, map[string]string{})
+	var result = regexp.FindAllStringSubmatch(url, -1)
+	var parameters []string
+	for i := 1; i < len(result[0]); i++ {
+		parameters = append(parameters, result[0][i])
+	}
+
+	if !regexp.MatchString(url) {
+		t.Fail()
+	}
+
+	if !arrayCompareString(expect, parameters) {
+		fmt.Print(strings.Join(parameters, ", "))
+		fmt.Print("\n")
 		t.Fail()
 	}
 }
