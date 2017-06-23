@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func generateRegExpFromPathVerification(t *testing.T, path string, url string, expect string, requirements map[string]string) {
+func testGenerateRegExpFromPathVerification(t *testing.T, path string, url string, expect string, requirements map[string]string) {
 	var regexp = generateRegExpFromPath(path, requirements)
 	if regexp.String() != expect {
 		fmt.Print(regexp.String())
@@ -18,7 +18,7 @@ func generateRegExpFromPathVerification(t *testing.T, path string, url string, e
 	}
 }
 
-func generateRegExpFromPathValueVerification(t *testing.T, path string, url string, expect []string, requirements map[string]string) {
+func testGenerateRegExpFromPathValueVerification(t *testing.T, path string, url string, expect []string, requirements map[string]string) {
 	var regexp = generateRegExpFromPath(path, requirements)
 	var result = regexp.FindAllStringSubmatch(url, -1)
 	var parameters []string
@@ -92,7 +92,7 @@ func TestGenerateRegExpFromPathNoArgs(t *testing.T) {
 	var url = "/api/user"
 	var expect = "/api/user"
 
-	generateRegExpFromPathVerification(t, path, url, expect, map[string]string{})
+	testGenerateRegExpFromPathVerification(t, path, url, expect, map[string]string{})
 }
 
 func TestGenerateRegExpFromPathSingleArg(t *testing.T) {
@@ -100,7 +100,7 @@ func TestGenerateRegExpFromPathSingleArg(t *testing.T) {
 	var url = "/api/user/5"
 	var expect = "/api/user/([^/]+)"
 
-	generateRegExpFromPathVerification(t, path, url, expect, map[string]string{})
+	testGenerateRegExpFromPathVerification(t, path, url, expect, map[string]string{})
 }
 
 func TestGenerateRegExpFromPathSingleCopiedArg(t *testing.T) {
@@ -108,7 +108,7 @@ func TestGenerateRegExpFromPathSingleCopiedArg(t *testing.T) {
 	var url = "/api/user/5/user-5"
 	var expect = "/api/user/([^/]+)/user-([^/]+)"
 
-	generateRegExpFromPathVerification(t, path, url, expect, map[string]string{})
+	testGenerateRegExpFromPathVerification(t, path, url, expect, map[string]string{})
 }
 
 func TestGenerateRegExpFromPathTwoArgs(t *testing.T) {
@@ -116,7 +116,7 @@ func TestGenerateRegExpFromPathTwoArgs(t *testing.T) {
 	var url = "/api/user/5/client-poltorak-dariusz"
 	var expect = "/api/user/([^/]+)/client-([^/]+)"
 
-	generateRegExpFromPathVerification(t, path, url, expect, map[string]string{})
+	testGenerateRegExpFromPathVerification(t, path, url, expect, map[string]string{})
 }
 
 func TestGenerateRegExpFromPathNoValues(t *testing.T) {
@@ -124,7 +124,7 @@ func TestGenerateRegExpFromPathNoValues(t *testing.T) {
 	var url = "/api/user/5/client-poltorak-dariusz"
 	var expect = []string{}
 
-	generateRegExpFromPathValueVerification(t, path, url, expect, map[string]string{})
+	testGenerateRegExpFromPathValueVerification(t, path, url, expect, map[string]string{})
 }
 
 func TestGenerateRegExpFromPathOneValue(t *testing.T) {
@@ -132,7 +132,7 @@ func TestGenerateRegExpFromPathOneValue(t *testing.T) {
 	var url = "/api/user/5"
 	var expect = []string{"5"}
 
-	generateRegExpFromPathValueVerification(t, path, url, expect, map[string]string{})
+	testGenerateRegExpFromPathValueVerification(t, path, url, expect, map[string]string{})
 }
 
 func TestGenerateRegExpFromPathTwoValues(t *testing.T) {
@@ -140,7 +140,7 @@ func TestGenerateRegExpFromPathTwoValues(t *testing.T) {
 	var url = "/api/user/5/client-poltorak-dariusz"
 	var expect = []string{"5", "poltorak-dariusz"}
 
-	generateRegExpFromPathValueVerification(t, path, url, expect, map[string]string{})
+	testGenerateRegExpFromPathValueVerification(t, path, url, expect, map[string]string{})
 }
 
 func TestGenerateRegExpFromPathWithRequirement(t *testing.T) {
@@ -149,7 +149,7 @@ func TestGenerateRegExpFromPathWithRequirement(t *testing.T) {
 	var expect = "/api/user/([^/]+)/client-([a-z\\-]+)"
 	var requirements = map[string]string{"slug": "[a-z\\-]+"}
 
-	generateRegExpFromPathVerification(t, path, url, expect, requirements)
+	testGenerateRegExpFromPathVerification(t, path, url, expect, requirements)
 }
 
 func TestGenerateRegExpFromPathWithTwoRequirements(t *testing.T) {
@@ -158,7 +158,7 @@ func TestGenerateRegExpFromPathWithTwoRequirements(t *testing.T) {
 	var expect = "/api/user/([1-9]+[0-9]*)/client-([a-z\\-]+)"
 	var requirements = map[string]string{"id": "[1-9]+[0-9]*", "slug": "[a-z\\-]+"}
 
-	generateRegExpFromPathVerification(t, path, url, expect, requirements)
+	testGenerateRegExpFromPathVerification(t, path, url, expect, requirements)
 }
 
 func TestGenerateUrl(t *testing.T) {

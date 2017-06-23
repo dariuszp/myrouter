@@ -40,7 +40,7 @@ type MyRouter struct {
 // host - website host, for example example.com
 // port - leave empty if You don't want to change port
 // path - path after the host and port
-func (router *MyRouter) AddRoute(name string, methods []string, schema string, host string, port int, path string) (*MyRouter, error) {
+func (router *MyRouter) AddRoute(name string, methods []string, schema string, host string, port int, path string, requirements map[string]string) (*MyRouter, error) {
 	var _, ok = router.routes[name]
 	if ok {
 		var err = errors.New(strings.Join([]string{"Route name already registered", name}, " "))
@@ -53,7 +53,7 @@ func (router *MyRouter) AddRoute(name string, methods []string, schema string, h
 			return router, err
 		}
 	}
-	var route = &Route{name, methods, schema, host, port, path}
+	var route = NewRoute(name, methods, schema, host, port, path, requirements)
 	for _, method := range methods {
 		router.verbs[method][name] = route
 	}

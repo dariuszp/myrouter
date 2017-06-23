@@ -1,17 +1,28 @@
 package myrouter
 
 import (
+	"regexp"
 	"strings"
 )
 
 // Route represent single http route
 type Route struct {
-	name    string
-	methods []string
-	schema  string
-	host    string
-	port    int
-	path    string
+	name        string
+	methods     []string
+	schema      string
+	host        string
+	port        int
+	path        string
+	matchRegexp *regexp.Regexp
+	parameters  []string
+}
+
+// NewRoute create new route
+func NewRoute(name string, methods []string, schema string, host string, port int, path string, requirements map[string]string) *Route {
+	var regexp = generateRegExpFromPath(path, requirements)
+	var parameters = extractParamNames(path)
+	var route = &Route{name, methods, schema, host, port, path, regexp, parameters}
+	return route
 }
 
 // SetMethods replace list of methods
@@ -37,6 +48,7 @@ func (route *Route) AddMethod(newMethod string) (*Route, bool) {
 	return route, true
 }
 
+//RemoveMethod remove method from route
 func (route *Route) RemoveMethod(toRemove string) (*Route, bool) {
 	var result []string
 	var lenA = len(route.methods)
