@@ -6,6 +6,37 @@ import (
 	"testing"
 )
 
+func generateRegExpFromPathVerification(t *testing.T, path string, url string, expect string) {
+	var regexp = GenerateRegExpFromPath(path, map[string]string{})
+	if regexp.String() != expect {
+		fmt.Print(regexp.String())
+		fmt.Print("\n")
+		t.Fail()
+	}
+	if !regexp.MatchString(url) {
+		t.Fail()
+	}
+}
+
+func generateRegExpFromPathValueVerification(t *testing.T, path string, url string, expect []string) {
+	var regexp = GenerateRegExpFromPath(path, map[string]string{})
+	var result = regexp.FindAllStringSubmatch(url, -1)
+	var parameters []string
+	for i := 1; i < len(result[0]); i++ {
+		parameters = append(parameters, result[0][i])
+	}
+
+	if !regexp.MatchString(url) {
+		t.Fail()
+	}
+
+	if !arrayCompareString(expect, parameters) {
+		fmt.Print(strings.Join(parameters, ", "))
+		fmt.Print("\n")
+		t.Fail()
+	}
+}
+
 func TestGenerateEmptyPath(t *testing.T) {
 	var path, err = generatePath("", make(map[string]string))
 	if err != nil {
@@ -61,15 +92,7 @@ func TestGenerateRegExpFromPathNoArgs(t *testing.T) {
 	var url = "/api/user"
 	var expect = "/api/user"
 
-	var regexp = GenerateRegExpFromPath(path, map[string]string{})
-	if regexp.String() != expect {
-		fmt.Print(regexp.String())
-		fmt.Print("\n")
-		t.Fail()
-	}
-	if !regexp.MatchString(url) {
-		t.Fail()
-	}
+	generateRegExpFromPathVerification(t, path, url, expect)
 }
 
 func TestGenerateRegExpFromPathSingleArg(t *testing.T) {
@@ -77,15 +100,7 @@ func TestGenerateRegExpFromPathSingleArg(t *testing.T) {
 	var url = "/api/user/5"
 	var expect = "/api/user/([^/]+)"
 
-	var regexp = GenerateRegExpFromPath(path, map[string]string{})
-	if regexp.String() != expect {
-		fmt.Print(regexp.String())
-		fmt.Print("\n")
-		t.Fail()
-	}
-	if !regexp.MatchString(url) {
-		t.Fail()
-	}
+	generateRegExpFromPathVerification(t, path, url, expect)
 }
 
 func TestGenerateRegExpFromPathSingleCopiedArg(t *testing.T) {
@@ -93,15 +108,7 @@ func TestGenerateRegExpFromPathSingleCopiedArg(t *testing.T) {
 	var url = "/api/user/5/user-5"
 	var expect = "/api/user/([^/]+)/user-([^/]+)"
 
-	var regexp = GenerateRegExpFromPath(path, map[string]string{})
-	if regexp.String() != expect {
-		fmt.Print(regexp.String())
-		fmt.Print("\n")
-		t.Fail()
-	}
-	if !regexp.MatchString(url) {
-		t.Fail()
-	}
+	generateRegExpFromPathVerification(t, path, url, expect)
 }
 
 func TestGenerateRegExpFromPathTwoArgs(t *testing.T) {
@@ -109,15 +116,7 @@ func TestGenerateRegExpFromPathTwoArgs(t *testing.T) {
 	var url = "/api/user/5/client-poltorak-dariusz"
 	var expect = "/api/user/([^/]+)/client-([^/]+)"
 
-	var regexp = GenerateRegExpFromPath(path, map[string]string{})
-	if regexp.String() != expect {
-		fmt.Print(regexp.String())
-		fmt.Print("\n")
-		t.Fail()
-	}
-	if !regexp.MatchString(url) {
-		t.Fail()
-	}
+	generateRegExpFromPathVerification(t, path, url, expect)
 }
 
 func TestGenerateRegExpFromPathNoValues(t *testing.T) {
@@ -125,22 +124,7 @@ func TestGenerateRegExpFromPathNoValues(t *testing.T) {
 	var url = "/api/user/5/client-poltorak-dariusz"
 	var expect = []string{}
 
-	var regexp = GenerateRegExpFromPath(path, map[string]string{})
-	var result = regexp.FindAllStringSubmatch(url, -1)
-	var parameters []string
-	for i := 1; i < len(result[0]); i++ {
-		parameters = append(parameters, result[0][i])
-	}
-
-	if !regexp.MatchString(url) {
-		t.Fail()
-	}
-
-	if !arrayCompareString(expect, parameters) {
-		fmt.Print(strings.Join(parameters, ", "))
-		fmt.Print("\n")
-		t.Fail()
-	}
+	generateRegExpFromPathValueVerification(t, path, url, expect)
 }
 
 func TestGenerateRegExpFromPathOneValue(t *testing.T) {
@@ -148,22 +132,7 @@ func TestGenerateRegExpFromPathOneValue(t *testing.T) {
 	var url = "/api/user/5"
 	var expect = []string{"5"}
 
-	var regexp = GenerateRegExpFromPath(path, map[string]string{})
-	var result = regexp.FindAllStringSubmatch(url, -1)
-	var parameters []string
-	for i := 1; i < len(result[0]); i++ {
-		parameters = append(parameters, result[0][i])
-	}
-
-	if !regexp.MatchString(url) {
-		t.Fail()
-	}
-
-	if !arrayCompareString(expect, parameters) {
-		fmt.Print(strings.Join(parameters, ", "))
-		fmt.Print("\n")
-		t.Fail()
-	}
+	generateRegExpFromPathValueVerification(t, path, url, expect)
 }
 
 func TestGenerateRegExpFromPathTwoValues(t *testing.T) {
@@ -171,20 +140,5 @@ func TestGenerateRegExpFromPathTwoValues(t *testing.T) {
 	var url = "/api/user/5/client-poltorak-dariusz"
 	var expect = []string{"5", "poltorak-dariusz"}
 
-	var regexp = GenerateRegExpFromPath(path, map[string]string{})
-	var result = regexp.FindAllStringSubmatch(url, -1)
-	var parameters []string
-	for i := 1; i < len(result[0]); i++ {
-		parameters = append(parameters, result[0][i])
-	}
-
-	if !regexp.MatchString(url) {
-		t.Fail()
-	}
-
-	if !arrayCompareString(expect, parameters) {
-		fmt.Print(strings.Join(parameters, ", "))
-		fmt.Print("\n")
-		t.Fail()
-	}
+	generateRegExpFromPathValueVerification(t, path, url, expect)
 }
