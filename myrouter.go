@@ -61,6 +61,44 @@ func (router *MyRouter) AddRoute(name string, methods []string, schema string, h
 	return router, nil
 }
 
+// UpdateRoute register method for verbs
+// name - name of the route
+// methods - list of methods that works with this route
+// schema - http, https, ftp etc...
+// host - website host, for example example.com
+// port - leave empty if You don't want to change port
+// path - path after the host and port
+func (router *MyRouter) UpdateRoute(name string, methods []string, schema string, host string, port int, path string) (*MyRouter, error) {
+	var route, ok = router.routes[name]
+	for _, method := range methods {
+		method = strings.ToLower(method)
+		if !arrayContainsStringNoCase(SupportedMethods, method) {
+			var err = errors.New(strings.Join([]string{"Unsupported method", method}, " "))
+			return router, err
+		}
+	}
+
+	if ok && !arrayCompareString(methods, route.methods) {
+		for _, method := range router.routes[name].methods {
+			delete(router.verbs[method], name)
+			if len(router.verbs[method]) == 0 {
+				delete(router.verbs, method)
+			}
+		}
+		for _, method := range methods {
+			router.verbs[method][name] = route
+		}
+	}
+
+	route.methods = methods
+	route.schema = schema
+	route.host = host
+	route.port = port
+	route.path = path
+
+	return router, nil
+}
+
 // RemoveRoute remove route by name
 func (router *MyRouter) RemoveRoute(name string) bool {
 	var _, ok = router.routes[name]
