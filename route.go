@@ -12,7 +12,6 @@ type Route struct {
 	host    string
 	port    int
 	path    string
-	handler func()
 }
 
 // SetMethods replace list of methods
