@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestarrayContainsString(t *testing.T) {
+func TestArrayContainsString(t *testing.T) {
 	if !arrayContainsString([]string{"one", "two"}, "two") {
 		t.Fail()
 	}

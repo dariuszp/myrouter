@@ -39,7 +39,7 @@ func generateURL(schema string, host string, port int, path string, parameters m
 }
 
 //GenerateRegExpFromPath turns path to regexp pattern
-func GenerateRegExpFromPath(path string, requirements map[string]string) *regexp.Regexp {
+func generateRegExpFromPath(path string, requirements map[string]string) *regexp.Regexp {
 	var parameterEscapedName, pattern, escapedPath, result, patternReplace string
 	var ok bool
 	var parameters = extractParamNames(path)

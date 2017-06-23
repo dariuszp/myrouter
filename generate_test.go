@@ -7,7 +7,7 @@ import (
 )
 
 func generateRegExpFromPathVerification(t *testing.T, path string, url string, expect string, requirements map[string]string) {
-	var regexp = GenerateRegExpFromPath(path, requirements)
+	var regexp = generateRegExpFromPath(path, requirements)
 	if regexp.String() != expect {
 		fmt.Print(regexp.String())
 		fmt.Print("\n")
@@ -19,7 +19,7 @@ func generateRegExpFromPathVerification(t *testing.T, path string, url string, e
 }
 
 func generateRegExpFromPathValueVerification(t *testing.T, path string, url string, expect []string, requirements map[string]string) {
-	var regexp = GenerateRegExpFromPath(path, requirements)
+	var regexp = generateRegExpFromPath(path, requirements)
 	var result = regexp.FindAllStringSubmatch(url, -1)
 	var parameters []string
 	for i := 1; i < len(result[0]); i++ {
@@ -159,4 +159,55 @@ func TestGenerateRegExpFromPathWithTwoRequirements(t *testing.T) {
 	var requirements = map[string]string{"id": "[1-9]+[0-9]*", "slug": "[a-z\\-]+"}
 
 	generateRegExpFromPathVerification(t, path, url, expect, requirements)
+}
+
+func TestGenerateUrl(t *testing.T) {
+	var expect = "https://example.com/api/user/5"
+	var schema = "https"
+	var host = "example.com"
+	var port int
+	var path = "/api/user/{id}"
+	var parameters = map[string]string{"id": "5"}
+
+	var url, err = generateURL(schema, host, port, path, parameters)
+	if err != nil {
+		t.Fail()
+	}
+	if url != expect {
+		t.Fail()
+	}
+}
+
+func TestGenerateUrlTwoParameters(t *testing.T) {
+	var expect = "https://example.com/api/user/5/dariusz-poltorak"
+	var schema = "https"
+	var host = "example.com"
+	var port int
+	var path = "/api/user/{id}/{slug}"
+	var parameters = map[string]string{"slug": "dariusz-poltorak", "id": "5"}
+
+	var url, err = generateURL(schema, host, port, path, parameters)
+	if err != nil {
+		t.Fail()
+	}
+	if url != expect {
+		t.Fail()
+	}
+}
+
+func TestGenerateUrlMissingParameters(t *testing.T) {
+	var expect = "https://example.com/api/user/5/dariusz-poltorak"
+	var schema = "https"
+	var host = "example.com"
+	var port int
+	var path = "/api/user/{id}/{slug}"
+	var parameters = map[string]string{"id": "5"}
+
+	var url, err = generateURL(schema, host, port, path, parameters)
+	if err == nil {
+		t.Fail()
+	}
+	if url == expect {
+		t.Fail()
+	}
 }
