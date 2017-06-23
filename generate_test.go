@@ -211,3 +211,20 @@ func TestGenerateUrlMissingParameters(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestGenerateUrlTwoParametersWithPort(t *testing.T) {
+	var expect = "https://example.com:80/api/user/5/dariusz-poltorak"
+	var schema = "https"
+	var host = "example.com"
+	var port = 80
+	var path = "/api/user/{id}/{slug}"
+	var parameters = map[string]string{"slug": "dariusz-poltorak", "id": "5"}
+
+	var url, err = generateURL(schema, host, port, path, parameters)
+	if err != nil {
+		t.Fail()
+	}
+	if url != expect {
+		t.Fail()
+	}
+}
