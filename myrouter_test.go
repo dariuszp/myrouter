@@ -112,3 +112,21 @@ func TestMatchPathByWrongMethod(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestGetRouteByName(t *testing.T) {
+	var router = createRouter()
+	var route = router.GetRouteByName("profile")
+
+	if route.name != "profile" {
+		t.Fail()
+	}
+}
+
+func TestGetRouteByInvalidName(t *testing.T) {
+	var router = createRouter()
+	var route = router.GetRouteByName("mispelled-profile")
+
+	if route != nil {
+		t.Fail()
+	}
+}
