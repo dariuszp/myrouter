@@ -91,3 +91,5 @@ func (route *Route) GeneratePath(parameters map[string]string) (string, error) {
 func (route *Route) GenerateURL(parameters map[string]string) (string, error) {
 	return generateURL(route.schema, route.host, route.port, route.path, parameters, route.requirements)
 }
+
+// TODO: Add url anchor and query params
