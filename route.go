@@ -70,8 +70,9 @@ func (route *Route) Match(path string) bool {
 }
 
 // MatchMethod match route against specific method
+// If no method is specified in route, this check will pass
 func (route *Route) MatchMethod(method string, path string) bool {
-	if !arrayContainsString(route.methods, method) {
+	if len(route.methods) > 0 && !arrayContainsString(route.methods, method) {
 		return false
 	}
 	return route.Match(path)

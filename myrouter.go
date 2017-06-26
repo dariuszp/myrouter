@@ -115,3 +115,30 @@ func (router *MyRouter) RemoveRoute(name string) bool {
 	delete(router.routes, name)
 	return true
 }
+
+func (router *MyRouter) match(list map[string]*Route, path string) (*Route, map[string]string, error) {
+	for _, route := range list {
+		if route.Match(path) {
+			var _, parameters, err = route.ParsePath(path)
+			return route, parameters, err
+		}
+	}
+	return nil, map[string]string{}, errors.New("No route match")
+}
+
+// MatchPath find route that match specified path
+func (router *MyRouter) MatchPath(path string) (*Route, map[string]string, error) {
+	return router.match(router.routes, path)
+}
+
+// MatchPathByMethod find route that match specified path filtered by method
+// Returns route, parameters and error, route will be nil if there is no match
+func (router *MyRouter) MatchPathByMethod(method string, path string) (*Route, map[string]string, error) {
+	var list, ok = router.verbs[method]
+	if !ok {
+		var err = errors.New(strings.Join([]string{"Method not found", method}, " "))
+		return nil, map[string]string{}, err
+	}
+
+	return router.match(list, path)
+}

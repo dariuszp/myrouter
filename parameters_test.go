@@ -91,3 +91,30 @@ func TestExtractParamsFromRouteWithDifferentRoute(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestExtractParamsFromRouteWithNoParams(t *testing.T) {
+	var route = NewRoute("test", []string{"GET"}, "http", "example.com", 0, "/api/group", map[string]string{})
+	var parameters, err = extractParamsFromRoute(route, "/api/group")
+
+	if err != nil {
+		fmt.Println("Error while extracting parameters")
+		t.Fail()
+	}
+
+	if len(parameters) != 0 {
+		fmt.Println("Parameters count does not match, it should be 0")
+		t.Fail()
+	}
+
+	var _, ok1 = parameters["group"]
+	if ok1 {
+		fmt.Println("Invalid global variable")
+		t.Fail()
+	}
+
+	var _, ok2 = parameters["id"]
+	if ok2 {
+		fmt.Println("Invalid user variable")
+		t.Fail()
+	}
+}
