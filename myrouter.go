@@ -37,6 +37,16 @@ func match(router *MyRouter, list map[string]*Route, path string) (*Route, map[s
 	return nil, map[string]string{}, errors.New("No route match")
 }
 
+//NewMyRouter create instance of MyRouter
+func NewMyRouter(schema string, host string, port int) *MyRouter {
+	var verbs = make(map[string]map[string]*Route)
+	for _, verb := range SupportedMethods {
+		verbs[verb] = make(map[string]*Route)
+	}
+	var router = &MyRouter{schema, host, port, verbs, make(map[string]*Route)}
+	return router
+}
+
 // MyRouter is just my router :-D
 type MyRouter struct {
 	defaultSchema string
@@ -78,52 +88,17 @@ func (router *MyRouter) AddCustomRoute(name string, methods []string, schema str
 			return false, err
 		}
 	}
+
 	route, err = NewRoute(name, methods, schema, host, port, path, requirements)
 	if err != nil {
 		return false, err
 	}
 
 	for _, method := range methods {
+		method = strings.ToLower(method)
 		router.verbs[method][name] = route
 	}
 	router.routes[name] = route
-	return true, nil
-}
-
-// UpdateRoute register method for verbs
-// name - name of the route
-// methods - list of methods that works with this route
-// schema - http, https, ftp etc...
-// host - website host, for example example.com
-// port - leave empty if You don't want to change port
-// path - path after the host and port
-func (router *MyRouter) UpdateRoute(name string, methods []string, schema string, host string, port int, path string) (bool, error) {
-	var route, ok = router.routes[name]
-	for _, method := range methods {
-		method = strings.ToLower(method)
-		if !arrayContainsStringNoCase(SupportedMethods, method) {
-			var err = errors.New(strings.Join([]string{"Unsupported method", method}, " "))
-			return false, err
-		}
-	}
-
-	if ok && !arrayCompareString(methods, route.methods) {
-		for _, method := range router.routes[name].methods {
-			delete(router.verbs[method], name)
-			if len(router.verbs[method]) == 0 {
-				delete(router.verbs, method)
-			}
-		}
-		for _, method := range methods {
-			router.verbs[method][name] = route
-		}
-	}
-
-	route.methods = methods
-	route.schema = schema
-	route.host = host
-	route.port = port
-	route.path = path
 
 	return true, nil
 }
@@ -136,10 +111,8 @@ func (router *MyRouter) RemoveRoute(name string) bool {
 	}
 
 	for _, method := range router.routes[name].methods {
+		method = strings.ToLower(method)
 		delete(router.verbs[method], name)
-		if len(router.verbs[method]) == 0 {
-			delete(router.verbs, method)
-		}
 	}
 	delete(router.routes, name)
 	return true
@@ -153,6 +126,7 @@ func (router *MyRouter) MatchPath(path string) (*Route, map[string]string, error
 // MatchPathByMethod find route that match specified path filtered by method
 // Returns route, parameters and error, route will be nil if there is no match
 func (router *MyRouter) MatchPathByMethod(method string, path string) (*Route, map[string]string, error) {
+	method = strings.ToLower(method)
 	var list, ok = router.verbs[method]
 	if !ok {
 		var err = errors.New(strings.Join([]string{"Method not found", method}, " "))
