@@ -21,22 +21,29 @@ type Route struct {
 
 // NewRoute create new route
 func NewRoute(name string, methods []string, schema string, host string, port int, path string, requirements map[string]string) (*Route, error) {
-	var regexpFromPath, err = generateRegExpFromPath(path, requirements)
+	if len(path) == 0 {
+		return nil, errors.New("Route path cannot be empty")
+	}
+
+	var regexpFromPath, rx *regexp.Regexp
+	var err error
+	var requirementsRegexp = make(map[string]*regexp.Regexp)
+
+	for name, pattern := range requirements {
+		rx, err = regexp.Compile(pattern)
+		if err != nil {
+			return nil, err
+		}
+		requirementsRegexp[name] = rx
+	}
+
+	regexpFromPath, err = generateRegexpFromPath(path, requirementsRegexp)
 	if err != nil {
 		return nil, err
 	}
 
 	var parameters = extractParamNames(path)
-	var regexpRequirements = make(map[string]*regexp.Regexp)
-
-	for name, requirement := range requirements {
-		regexpRequirements[name], err = regexp.Compile(requirement)
-		if err != nil {
-			err = errors.New(strings.Join([]string{"Cannot compile requirement:", name, "=", requirement}, " "))
-			return nil, err
-		}
-	}
-	return &Route{name, methods, schema, host, port, path, parameters, regexpFromPath, regexpRequirements}, nil
+	return &Route{name, methods, schema, host, port, path, parameters, regexpFromPath, requirementsRegexp}, nil
 }
 
 // SetMethods replace list of methods

@@ -11,9 +11,10 @@ var defaultReadParameterPattern = "[^/]+"
 var defaultReadParameterRegexp = regexp.MustCompile(defaultReadParameterPattern)
 
 //GenerateRegExpFromPath turns path to regexp pattern
-func generateRegExpFromPath(path string, requirements map[string]string) (*regexp.Regexp, error) {
-	var parameterEscapedName, pattern, escapedPath, result, patternReplace string
+func generateRegexpFromPath(path string, requirements map[string]*regexp.Regexp) (*regexp.Regexp, error) {
+	var parameterEscapedName, escapedPath, result, patternReplace string
 	var ok bool
+	var rx *regexp.Regexp
 	var parameters = extractParamNames(path)
 
 	escapedPath = regexp.QuoteMeta(path)
@@ -23,9 +24,9 @@ func generateRegExpFromPath(path string, requirements map[string]string) (*regex
 
 	result = escapedPath
 	for _, parameterName := range parameters {
-		pattern, ok = requirements[parameterName]
-		if ok && len(pattern) > 0 {
-			patternReplace = pattern
+		rx, ok = requirements[parameterName]
+		if ok && len(rx.String()) > 0 {
+			patternReplace = rx.String()
 		} else {
 			patternReplace = defaultReadParameterPattern
 		}
