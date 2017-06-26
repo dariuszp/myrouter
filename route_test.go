@@ -2,12 +2,20 @@ package myrouter
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 )
 
 func TestRouteCreation(t *testing.T) {
+	var route *Route
+	var err error
 	var methods = []string{"get", "post"}
-	var route = NewRoute("test", methods, "https", "example.com", 0, "/api/user/{id}", map[string]string{"id": "[1-9]+[0-9]*"})
+	route, err = NewRoute("test", methods, "https", "example.com", 0, "/api/user/{id}", map[string]string{"id": "[1-9]+[0-9]*"})
+
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
 
 	if route.name != "test" {
 		fmt.Println("Invalid route name")
@@ -46,8 +54,15 @@ func TestRouteCreation(t *testing.T) {
 }
 
 func TestRouteCreationWithNoParams(t *testing.T) {
+	var route *Route
+	var err error
 	var methods = []string{"get", "post"}
-	var route = NewRoute("test", methods, "https", "example.com", 0, "/api/user", map[string]string{"id": "[1-9]+[0-9]*"})
+	route, err = NewRoute("test", methods, "https", "example.com", 0, "/api/user", map[string]string{"id": "[1-9]+[0-9]*"})
+
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
 
 	if route.name != "test" {
 		fmt.Println("Invalid route name")
@@ -76,6 +91,52 @@ func TestRouteCreationWithNoParams(t *testing.T) {
 
 	if len(route.parameters) != 0 {
 		fmt.Println("Invalid parameters count")
+		t.Fail()
+	}
+}
+
+func TestGenerateURL(t *testing.T) {
+	var route *Route
+	var err error
+	var url string
+	var methods = []string{"get", "post"}
+	route, err = NewRoute("test", methods, "https", "example.com", 0, "/api/user/{id}", map[string]string{"id": "[1-9]+[0-9]*"})
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+
+	url, err = route.GenerateURL(map[string]string{"id": "5"})
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+
+	if url != "https://example.com/api/user/5" {
+		fmt.Println(strings.Join([]string{"Invalid url", url}, " "))
+		t.Fail()
+	}
+}
+
+func TestGenerateURLWithNoParams(t *testing.T) {
+	var route *Route
+	var err error
+	var url string
+	var methods = []string{"get", "post"}
+	route, err = NewRoute("test", methods, "https", "example.com", 0, "/api/user", map[string]string{"id": "[1-9]+[0-9]*"})
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+	
+	url, err = route.GenerateURL(map[string]string{"id": "5"})
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+
+	if url != "https://example.com/api/user" {
+		fmt.Println(strings.Join([]string{"Invalid url", url}, " "))
 		t.Fail()
 	}
 }

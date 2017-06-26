@@ -27,6 +27,16 @@ const (
 // SupportedMethods contains all supported HTTP verbs
 var SupportedMethods = []string{MethodOptions, MethodGet, MethodHead, MethodPost, MethodPut, MethodDelete, MethodTrace, MethodConnect}
 
+func match(router *MyRouter, list map[string]*Route, path string) (*Route, map[string]string, error) {
+	for _, route := range list {
+		if route.Match(path) {
+			var _, parameters, err = route.ParsePath(path)
+			return route, parameters, err
+		}
+	}
+	return nil, map[string]string{}, errors.New("No route match")
+}
+
 // MyRouter is just my router :-D
 type MyRouter struct {
 	verbs  map[string]map[string]*Route
@@ -41,9 +51,11 @@ type MyRouter struct {
 // port - leave empty if You don't want to change port
 // path - path after the host and port
 func (router *MyRouter) AddRoute(name string, methods []string, schema string, host string, port int, path string, requirements map[string]string) (*MyRouter, error) {
+	var err error
+	var route *Route
 	var _, ok = router.routes[name]
 	if ok {
-		var err = errors.New(strings.Join([]string{"Route name already registered", name}, " "))
+		err = errors.New(strings.Join([]string{"Route name already registered", name}, " "))
 		return router, err
 	}
 	for _, method := range methods {
@@ -53,7 +65,11 @@ func (router *MyRouter) AddRoute(name string, methods []string, schema string, h
 			return router, err
 		}
 	}
-	var route = NewRoute(name, methods, schema, host, port, path, requirements)
+	route, err = NewRoute(name, methods, schema, host, port, path, requirements)
+	if err != nil {
+		return router, err
+	}
+
 	for _, method := range methods {
 		router.verbs[method][name] = route
 	}
@@ -116,19 +132,9 @@ func (router *MyRouter) RemoveRoute(name string) bool {
 	return true
 }
 
-func (router *MyRouter) match(list map[string]*Route, path string) (*Route, map[string]string, error) {
-	for _, route := range list {
-		if route.Match(path) {
-			var _, parameters, err = route.ParsePath(path)
-			return route, parameters, err
-		}
-	}
-	return nil, map[string]string{}, errors.New("No route match")
-}
-
 // MatchPath find route that match specified path
 func (router *MyRouter) MatchPath(path string) (*Route, map[string]string, error) {
-	return router.match(router.routes, path)
+	return match(router, router.routes, path)
 }
 
 // MatchPathByMethod find route that match specified path filtered by method
@@ -140,5 +146,14 @@ func (router *MyRouter) MatchPathByMethod(method string, path string) (*Route, m
 		return nil, map[string]string{}, err
 	}
 
-	return router.match(list, path)
+	return match(router, list, path)
+}
+
+// GetRouteByName return route by its name
+func (router *MyRouter) GetRouteByName(name string) *Route {
+	var route, ok = router.routes[name]
+	if !ok {
+		return nil
+	}
+	return route
 }

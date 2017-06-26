@@ -43,8 +43,11 @@ func TestextractParamNamesTwoArguments(t *testing.T) {
 }
 
 func TestExtractParamsFromRoute(t *testing.T) {
-	var route = NewRoute("test", []string{"GET"}, "http", "example.com", 0, "/api/group-{group}/user-{id}", map[string]string{})
-	var parameters, err = extractParamsFromRoute(route, "/api/group-global/user-5")
+	var route *Route
+	var err error
+	var parameters map[string]string
+	route, err = NewRoute("test", []string{"GET"}, "http", "example.com", 0, "/api/group-{group}/user-{id}", map[string]string{})
+	parameters, err = extractParamsFromRoute(route, "/api/group-global/user-5")
 
 	if err != nil {
 		fmt.Println("Error while extracting parameters")
@@ -68,8 +71,11 @@ func TestExtractParamsFromRoute(t *testing.T) {
 }
 
 func TestExtractParamsFromRouteWithDifferentRoute(t *testing.T) {
-	var route = NewRoute("test", []string{"GET"}, "http", "example.com", 0, "/api/group-{group}/user-{id}", map[string]string{})
-	var parameters, err = extractParamsFromRoute(route, "/api/user-global/data-5")
+	var route *Route
+	var err error
+	var parameters map[string]string
+	route, err = NewRoute("test", []string{"GET"}, "http", "example.com", 0, "/api/group-{group}/user-{id}", map[string]string{})
+	parameters, err = extractParamsFromRoute(route, "/api/user-global/data-5")
 
 	if err == nil {
 		fmt.Println("Error expected")
@@ -93,8 +99,11 @@ func TestExtractParamsFromRouteWithDifferentRoute(t *testing.T) {
 }
 
 func TestExtractParamsFromRouteWithNoParams(t *testing.T) {
-	var route = NewRoute("test", []string{"GET"}, "http", "example.com", 0, "/api/group", map[string]string{})
-	var parameters, err = extractParamsFromRoute(route, "/api/group")
+	var route *Route
+	var err error
+	var parameters map[string]string
+	route, err = NewRoute("test", []string{"GET"}, "http", "example.com", 0, "/api/group", map[string]string{})
+	parameters, err = extractParamsFromRoute(route, "/api/group")
 
 	if err != nil {
 		fmt.Println("Error while extracting parameters")

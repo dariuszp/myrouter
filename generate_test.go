@@ -2,24 +2,36 @@ package myrouter
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 	"testing"
 )
 
 func testGenerateRegExpFromPathVerification(t *testing.T, path string, url string, expect string, requirements map[string]string) {
-	var regexp = generateRegExpFromPath(path, requirements)
+	var regexp, err = generateRegExpFromPath(path, requirements)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+
 	if regexp.String() != expect {
 		fmt.Print(regexp.String())
 		fmt.Print("\n")
 		t.Fail()
 	}
+
 	if !regexp.MatchString(url) {
 		t.Fail()
 	}
 }
 
 func testGenerateRegExpFromPathValueVerification(t *testing.T, path string, url string, expect []string, requirements map[string]string) {
-	var regexp = generateRegExpFromPath(path, requirements)
+	var regexp, err = generateRegExpFromPath(path, requirements)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+
 	var result = regexp.FindAllStringSubmatch(url, -1)
 	var parameters []string
 	for i := 1; i < len(result[0]); i++ {
@@ -38,7 +50,7 @@ func testGenerateRegExpFromPathValueVerification(t *testing.T, path string, url 
 }
 
 func TestGenerateEmptyPath(t *testing.T) {
-	var path, err = generatePath("", make(map[string]string))
+	var path, err = generatePath("", make(map[string]string), make(map[string]*regexp.Regexp))
 	if err != nil {
 		t.Fail()
 	}
@@ -48,40 +60,44 @@ func TestGenerateEmptyPath(t *testing.T) {
 }
 
 func TestGeneratePathWithMissingParameter(t *testing.T) {
-	var path, err = generatePath("/{id}", make(map[string]string))
+	var path, err = generatePath("/{id}", make(map[string]string), make(map[string]*regexp.Regexp))
 	if err == nil {
 		t.Fail()
 	}
+
 	if path != "" {
 		t.Fail()
 	}
 }
 
 func TestGeneratePathWithParameter(t *testing.T) {
-	var path, err = generatePath("/{id}", map[string]string{"id": "test"})
+	var path, err = generatePath("/{id}", map[string]string{"id": "test"}, make(map[string]*regexp.Regexp))
 	if err != nil {
 		t.Fail()
 	}
+
 	if path != "/test" {
 		t.Fail()
 	}
 }
 
 func TestGeneratePathWithExtraParameter(t *testing.T) {
-	var path, err = generatePath("/{id}", map[string]string{"id": "test", "slug": "poltorak-dariusz"})
+	var path, err = generatePath("/{id}", map[string]string{"id": "test", "slug": "poltorak-dariusz"}, make(map[string]*regexp.Regexp))
 	if err != nil {
 		t.Fail()
 	}
+
 	if path != "/test" {
 		t.Fail()
 	}
 }
 
 func TestGeneratePathWithTwoParameters(t *testing.T) {
-	var path, err = generatePath("/{id}/{slug}", map[string]string{"id": "test", "slug": "poltorak-dariusz"})
+	var path, err = generatePath("/{id}/{slug}", map[string]string{"id": "test", "slug": "poltorak-dariusz"}, make(map[string]*regexp.Regexp))
 	if err != nil {
 		t.Fail()
 	}
+
 	if path != "/test/poltorak-dariusz" {
 		t.Fail()
 	}
@@ -169,7 +185,7 @@ func TestGenerateUrl(t *testing.T) {
 	var path = "/api/user/{id}"
 	var parameters = map[string]string{"id": "5"}
 
-	var url, err = generateURL(schema, host, port, path, parameters)
+	var url, err = generateURL(schema, host, port, path, parameters, make(map[string]*regexp.Regexp))
 	if err != nil {
 		t.Fail()
 	}
@@ -186,7 +202,7 @@ func TestGenerateUrlTwoParameters(t *testing.T) {
 	var path = "/api/user/{id}/{slug}"
 	var parameters = map[string]string{"slug": "dariusz-poltorak", "id": "5"}
 
-	var url, err = generateURL(schema, host, port, path, parameters)
+	var url, err = generateURL(schema, host, port, path, parameters, make(map[string]*regexp.Regexp))
 	if err != nil {
 		t.Fail()
 	}
@@ -203,7 +219,7 @@ func TestGenerateUrlMissingParameters(t *testing.T) {
 	var path = "/api/user/{id}/{slug}"
 	var parameters = map[string]string{"id": "5"}
 
-	var url, err = generateURL(schema, host, port, path, parameters)
+	var url, err = generateURL(schema, host, port, path, parameters, make(map[string]*regexp.Regexp))
 	if err == nil {
 		t.Fail()
 	}
@@ -220,7 +236,7 @@ func TestGenerateUrlTwoParametersWithPort(t *testing.T) {
 	var path = "/api/user/{id}/{slug}"
 	var parameters = map[string]string{"slug": "dariusz-poltorak", "id": "5"}
 
-	var url, err = generateURL(schema, host, port, path, parameters)
+	var url, err = generateURL(schema, host, port, path, parameters, make(map[string]*regexp.Regexp))
 	if err != nil {
 		t.Fail()
 	}

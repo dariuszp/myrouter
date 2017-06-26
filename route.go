@@ -1,28 +1,42 @@
 package myrouter
 
 import (
+	"errors"
 	"regexp"
 	"strings"
 )
 
 // Route represent single http route
 type Route struct {
-	name        string
-	methods     []string
-	schema      string
-	host        string
-	port        int
-	path        string
-	matchRegexp *regexp.Regexp
-	parameters  []string
+	name         string
+	methods      []string
+	schema       string
+	host         string
+	port         int
+	path         string
+	parameters   []string
+	matchRegexp  *regexp.Regexp
+	requirements map[string]*regexp.Regexp
 }
 
 // NewRoute create new route
-func NewRoute(name string, methods []string, schema string, host string, port int, path string, requirements map[string]string) *Route {
-	var regexp = generateRegExpFromPath(path, requirements)
+func NewRoute(name string, methods []string, schema string, host string, port int, path string, requirements map[string]string) (*Route, error) {
+	var regexpFromPath, err = generateRegExpFromPath(path, requirements)
+	if err != nil {
+		return nil, err
+	}
+
 	var parameters = extractParamNames(path)
-	var route = &Route{name, methods, schema, host, port, path, regexp, parameters}
-	return route
+	var regexpRequirements = make(map[string]*regexp.Regexp)
+
+	for name, requirement := range requirements {
+		regexpRequirements[name], err = regexp.Compile(requirement)
+		if err != nil {
+			err = errors.New(strings.Join([]string{"Cannot compile requirement:", name, "=", requirement}, " "))
+			return nil, err
+		}
+	}
+	return &Route{name, methods, schema, host, port, path, parameters, regexpFromPath, regexpRequirements}, nil
 }
 
 // SetMethods replace list of methods
@@ -36,31 +50,6 @@ func (route *Route) SetMethods(methods []string) (*Route, bool) {
 	}
 	route.methods = result
 	return route, true
-}
-
-// AddMethod append method to list
-func (route *Route) AddMethod(newMethod string) (*Route, bool) {
-	newMethod = strings.ToLower(newMethod)
-	if !arrayContainsString(SupportedMethods, newMethod) {
-		return route, false
-	}
-	route.methods = append(route.methods, newMethod)
-	return route, true
-}
-
-//RemoveMethod remove method from route
-func (route *Route) RemoveMethod(toRemove string) (*Route, bool) {
-	var result []string
-	var lenA = len(route.methods)
-	toRemove = strings.ToLower(toRemove)
-	for _, value := range route.methods {
-		if value != toRemove {
-			result = append(result, value)
-		}
-	}
-	var lenB = len(result)
-	route.methods = result
-	return route, lenA != lenB
 }
 
 // Match path to find route
@@ -84,4 +73,14 @@ func (route *Route) ParsePath(path string) (bool, map[string]string, error) {
 	var match = route.Match(path)
 	var parameters, err = extractParamsFromRoute(route, path)
 	return match, parameters, err
+}
+
+// GeneratePath generate path from route
+func (route *Route) GeneratePath(parameters map[string]string) (string, error) {
+	return generatePath(route.path, parameters, route.requirements)
+}
+
+// GenerateURL generate path from route
+func (route *Route) GenerateURL(parameters map[string]string) (string, error) {
+	return generateURL(route.schema, route.host, route.port, route.path, parameters, route.requirements)
 }
