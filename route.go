@@ -62,3 +62,25 @@ func (route *Route) RemoveMethod(toRemove string) (*Route, bool) {
 	route.methods = result
 	return route, lenA != lenB
 }
+
+// Match path to find route
+// @returns boolean
+func (route *Route) Match(path string) bool {
+	return route.matchRegexp.MatchString(path)
+}
+
+// MatchMethod match route against specific method
+func (route *Route) MatchMethod(method string, path string) bool {
+	if !arrayContainsString(route.methods, method) {
+		return false
+	}
+	return route.Match(path)
+}
+
+// ParsePath will parse path, check for a match and then extract route parameters
+// Returns match bool, parameetsrs and error in case parameters parse does not work
+func (route *Route) ParsePath(path string) (bool, map[string]string, error) {
+	var match = route.Match(path)
+	var parameters, err = extractParamsFromRoute(route, path)
+	return match, parameters, err
+}
