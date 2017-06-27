@@ -129,7 +129,7 @@ func (router *MyRouter) MatchPath(path string) (*Route, map[string]string, error
 	return match(router, router.routes, path)
 }
 
-// MatchPath find route that match specified path
+// MatchURL find route that match specified path
 func (router *MyRouter) MatchURL(url string) (*Route, map[string]string, error) {
 	return matchURL(router, router.routes, url)
 }
