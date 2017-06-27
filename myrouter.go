@@ -33,17 +33,29 @@ func NewMyRouter(schema string, host string, port int) *MyRouter {
 	for _, verb := range SupportedMethods {
 		verbs[verb] = make(map[string]*Route)
 	}
-	var router = &MyRouter{schema, host, port, verbs, make(map[string]*Route)}
+	var router = &MyRouter{schema, "", "", host, port, verbs, make(map[string]*Route)}
+	return router
+}
+
+//NewUnsecureMyRouter create instance of MyRouter
+func NewUnsecureMyRouter(schema string, login string, password string, host string, port int) *MyRouter {
+	var verbs = make(map[string]map[string]*Route)
+	for _, verb := range SupportedMethods {
+		verbs[verb] = make(map[string]*Route)
+	}
+	var router = &MyRouter{schema, login, password, host, port, verbs, make(map[string]*Route)}
 	return router
 }
 
 // MyRouter is just my router :-D
 type MyRouter struct {
-	defaultSchema string
-	defaultHost   string
-	defaultPort   int
-	verbs         map[string]map[string]*Route
-	routes        map[string]*Route
+	defaultSchema           string
+	defaultUnsecureLogin    string
+	defaultUnsecurePassword string
+	defaultHost             string
+	defaultPort             int
+	verbs                   map[string]map[string]*Route
+	routes                  map[string]*Route
 }
 
 // Add register method for verbs
@@ -52,7 +64,7 @@ type MyRouter struct {
 // path - path after the host and port
 // requirements - map of regexp patterns (as strings) for route params
 func (router *MyRouter) Add(name string, methods []string, path string, requirements map[string]string) (bool, error) {
-	return router.AddCustom(name, methods, router.defaultSchema, "", "", router.defaultHost, router.defaultPort, path, requirements)
+	return router.AddCustom(name, methods, router.defaultSchema, router.defaultUnsecureLogin, router.defaultUnsecurePassword, router.defaultHost, router.defaultPort, path, requirements)
 }
 
 // AddCustom register method for verbs
