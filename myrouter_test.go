@@ -15,6 +15,16 @@ func createRouter() *MyRouter {
 	return router
 }
 
+func createRouterWithPort() *MyRouter {
+	var router = NewMyRouter("http", "example.com", 3000)
+
+	router.Add("dashboard", []string{}, "/dashboard", make(map[string]string))
+	router.Add("profile", []string{"GET"}, "/user/{slug}", map[string]string{"slug": "[a-z\\-]+"})
+	router.Add("message", []string{"POST", "PUT"}, "/message/{channel}/{type}", map[string]string{"type": "error|success"})
+
+	return router
+}
+
 func TestAddInvalidRoute(t *testing.T) {
 	var router = createRouter()
 	var success, err = router.Add("error", []string{}, "", make(map[string]string))
@@ -37,62 +47,6 @@ func TestRemoveRoute(t *testing.T) {
 	}
 
 	if route != nil {
-		t.Fail()
-	}
-}
-
-func TestMatchPath(t *testing.T) {
-	var router = createRouter()
-	var route, params, err = router.MatchPath("/user/poltorak-dariusz")
-	if route.name != "profile" {
-		t.Fail()
-	}
-
-	if len(params) > 1 {
-		t.Fail()
-	}
-
-	if params["slug"] != "poltorak-dariusz" {
-		t.Fail()
-	}
-
-	if err != nil {
-		t.Fail()
-	}
-}
-
-func TestMatchInvalidPath(t *testing.T) {
-	var router = createRouter()
-	var route, params, err = router.MatchPath("/user/5")
-	if route != nil {
-		t.Fail()
-	}
-
-	if len(params) > 0 {
-		t.Fail()
-	}
-
-	if err == nil {
-		t.Fail()
-	}
-}
-
-func TestMatchPathByMethod(t *testing.T) {
-	var router = createRouter()
-	var route, params, err = router.MatchPathByMethod("GET", "/user/poltorak-dariusz")
-	if route.name != "profile" {
-		t.Fail()
-	}
-
-	if len(params) > 1 {
-		t.Fail()
-	}
-
-	if params["slug"] != "poltorak-dariusz" {
-		t.Fail()
-	}
-
-	if err != nil {
 		t.Fail()
 	}
 }
@@ -245,6 +199,102 @@ func TestUnsecureRouterURLWithFragment(t *testing.T) {
 	var path, err = router.UnsecureURLWithFragment("profile", "test", "test2", map[string]string{"slug": "poltorak-dariusz"}, "test")
 
 	if path != "http://test:test2@example.com/user/poltorak-dariusz#test" {
+		t.Fail()
+	}
+
+	if err != nil {
+		t.Fail()
+	}
+}
+
+func TestMatchPath(t *testing.T) {
+	var router = createRouter()
+	var route, params, err = router.MatchPath("/user/poltorak-dariusz")
+	if route.name != "profile" {
+		t.Fail()
+	}
+
+	if len(params) > 1 {
+		t.Fail()
+	}
+
+	if params["slug"] != "poltorak-dariusz" {
+		t.Fail()
+	}
+
+	if err != nil {
+		t.Fail()
+	}
+}
+
+func TestMatchInvalidPath(t *testing.T) {
+	var router = createRouter()
+	var route, params, err = router.MatchPath("/user/5")
+	if route != nil {
+		t.Fail()
+	}
+
+	if len(params) > 0 {
+		t.Fail()
+	}
+
+	if err == nil {
+		t.Fail()
+	}
+}
+
+func TestMatchPathByMethod(t *testing.T) {
+	var router = createRouter()
+	var route, params, err = router.MatchPathByMethod("GET", "/user/poltorak-dariusz")
+	if route.name != "profile" {
+		t.Fail()
+	}
+
+	if len(params) > 1 {
+		t.Fail()
+	}
+
+	if params["slug"] != "poltorak-dariusz" {
+		t.Fail()
+	}
+
+	if err != nil {
+		t.Fail()
+	}
+}
+
+func TestMatchURL(t *testing.T) {
+	var router = createRouter()
+	var route, params, err = router.MatchURL("http://example.com/user/poltorak-dariusz?x=1#test")
+	if route.name != "profile" {
+		t.Fail()
+	}
+
+	if len(params) > 1 {
+		t.Fail()
+	}
+
+	if params["slug"] != "poltorak-dariusz" {
+		t.Fail()
+	}
+
+	if err != nil {
+		t.Fail()
+	}
+}
+
+func TestMatchURLWithPort(t *testing.T) {
+	var router = createRouterWithPort()
+	var route, params, err = router.MatchURL("http://example.com:3000/user/poltorak-dariusz?x=1#test")
+	if route.name != "profile" {
+		t.Fail()
+	}
+
+	if len(params) > 1 {
+		t.Fail()
+	}
+
+	if params["slug"] != "poltorak-dariusz" {
 		t.Fail()
 	}
 
