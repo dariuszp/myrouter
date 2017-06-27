@@ -128,14 +128,14 @@ func TestGenerateURLWithNoParams(t *testing.T) {
 		fmt.Println(err)
 		t.Fail()
 	}
-	
+
 	url, err = route.GenerateURL(map[string]string{"id": "5"})
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
 	}
 
-	if url != "https://example.com/api/user" {
+	if url != "https://example.com/api/user?id=5" {
 		fmt.Println(strings.Join([]string{"Invalid url", url}, " "))
 		t.Fail()
 	}

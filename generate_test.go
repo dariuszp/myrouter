@@ -87,7 +87,7 @@ func TestGeneratePathWithExtraParameter(t *testing.T) {
 		t.Fail()
 	}
 
-	if path != "/test" {
+	if path != "/test?slug=poltorak-dariusz" {
 		t.Fail()
 	}
 }

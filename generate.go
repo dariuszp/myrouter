@@ -2,6 +2,7 @@ package myrouter
 
 import (
 	"errors"
+	"net/url"
 	"regexp"
 	"strconv"
 	"strings"
@@ -48,6 +49,8 @@ func generatePath(path string, parameters map[string]string, requirements map[st
 			return "", errors.New(strings.Join([]string{"Invalid path parameter", parameterName}, " "))
 		}
 
+		delete(parameters, parameterName)
+
 		var rx, rxok = requirements[parameterName]
 		if !rxok {
 			rx = defaultReadParameterRegexp
@@ -59,6 +62,14 @@ func generatePath(path string, parameters map[string]string, requirements map[st
 		parameterName = strings.Join([]string{"{", parameterName, "}"}, "")
 		path = strings.Replace(path, parameterName, value, -1)
 	}
+
+	if len(parameters) > 0 {
+		var queryString = generateQueryString(parameters)
+		if len(queryString) > 0 {
+			path = strings.Join([]string{path, queryString}, "?")
+		}
+	}
+
 	return path, nil
 }
 
@@ -74,5 +85,19 @@ func generateURL(schema string, host string, port int, path string, parameters m
 	if err != nil {
 		return "", err
 	}
+
 	return strings.Join([]string{hostname, generatedPath}, ""), nil
+}
+
+func generateQueryString(parameters map[string]string) string {
+	var queryStringParameters []string
+	var queryParam string
+	for name, value := range parameters {
+		name = url.QueryEscape(name)
+		value = url.QueryEscape(value)
+		queryParam = strings.Join([]string{name, value}, "=")
+		queryStringParameters = append(queryStringParameters, queryParam)
+	}
+
+	return strings.Join(queryStringParameters, "&")
 }

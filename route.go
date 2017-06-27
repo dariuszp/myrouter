@@ -92,4 +92,12 @@ func (route *Route) GenerateURL(parameters map[string]string) (string, error) {
 	return generateURL(route.schema, route.host, route.port, route.path, parameters, route.requirements)
 }
 
+func (route *Route) GenerateURLWithFragment(parameters map[string]string, fragment string) (string, error) {
+	var url, err = generateURL(route.schema, route.host, route.port, route.path, parameters, route.requirements)
+	if err != nil {
+		return "", err
+	}
+	return strings.Join([]string{url, fragment}, "#"), nil
+}
+
 // TODO: Add url anchor and query params
