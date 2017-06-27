@@ -60,6 +60,8 @@ func generatePath(path string, parameters map[string]string, requirements map[st
 		}
 
 		parameterName = strings.Join([]string{"{", parameterName, "}"}, "")
+
+		value = url.QueryEscape(value)
 		path = strings.Replace(path, parameterName, value, -1)
 	}
 
