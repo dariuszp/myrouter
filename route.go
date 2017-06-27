@@ -2,7 +2,9 @@ package myrouter
 
 import (
 	"errors"
+	"net/url"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -10,7 +12,7 @@ import (
 type Route struct {
 	name             string
 	methods          []string
-	schema           string
+	scheme           string
 	unsecureLogin    string
 	unsecurePassword string
 	host             string
@@ -22,7 +24,7 @@ type Route struct {
 }
 
 // NewRoute create new route
-func NewRoute(name string, methods []string, schema string, host string, port int, path string, requirements map[string]string) (*Route, error) {
+func NewRoute(name string, methods []string, scheme string, host string, port int, path string, requirements map[string]string) (*Route, error) {
 	if len(path) == 0 {
 		return nil, errors.New("Route path cannot be empty")
 	}
@@ -45,7 +47,7 @@ func NewRoute(name string, methods []string, schema string, host string, port in
 	}
 
 	var parameters = extractParamNames(path)
-	return &Route{name, methods, schema, "", "", host, port, path, parameters, regexpFromPath, requirementsRegexp}, nil
+	return &Route{name, methods, scheme, "", "", host, port, path, parameters, regexpFromPath, requirementsRegexp}, nil
 }
 
 // SetMethods replace list of methods
@@ -67,6 +69,26 @@ func (route *Route) Match(path string) bool {
 	return route.matchRegexp.MatchString(path)
 }
 
+// MatchURL path to find route
+// @returns boolean
+func (route *Route) MatchURL(urlAddress string) bool {
+	var parsed, err = url.Parse(urlAddress)
+	if err != nil {
+		return false
+	}
+	if !strings.EqualFold(parsed.Scheme, route.scheme) {
+		return false
+	}
+	var host = route.host
+	if route.port > 0 {
+		host = strings.Join([]string{host, strconv.Itoa(route.port)}, ":")
+	}
+	if !strings.EqualFold(parsed.Host, host) {
+		return false
+	}
+	return route.matchRegexp.MatchString(parsed.Path)
+}
+
 // MatchMethod match route against specific method
 // If no method is specified in route, this check will pass
 func (route *Route) MatchMethod(method string, path string) bool {
@@ -76,11 +98,48 @@ func (route *Route) MatchMethod(method string, path string) bool {
 	return route.Match(path)
 }
 
+// MatchURLMethod match route against specific method
+// If no method is specified in route, this check will pass
+func (route *Route) MatchURLMethod(method string, urlAddress string) bool {
+	if len(route.methods) > 0 && !arrayContainsString(route.methods, method) {
+		return false
+	}
+	var parsed, err = url.Parse(urlAddress)
+	if err != nil {
+		return false
+	}
+	if !strings.EqualFold(parsed.Scheme, route.scheme) {
+		return false
+	}
+	var host = route.host
+	if route.port > 0 {
+		host = strings.Join([]string{host, strconv.Itoa(route.port)}, ":")
+	}
+	if !strings.EqualFold(parsed.Host, host) {
+		return false
+	}
+	return route.Match(parsed.Path)
+}
+
 // ParsePath will parse path, check for a match and then extract route parameters
 // Returns match bool, parameetsrs and error in case parameters parse does not work
 func (route *Route) ParsePath(path string) (bool, map[string]string, error) {
 	var match = route.Match(path)
 	var parameters, err = extractParamsFromRoute(route, path)
+	return match, parameters, err
+}
+
+// ParseURL will parse path, check for a match and then extract route parameters
+// Returns match bool, parameetsrs and error in case parameters parse does not work
+func (route *Route) ParseURL(urlAddress string) (bool, map[string]string, error) {
+	var parameters map[string]string
+	var parsed, err = url.Parse(urlAddress)
+	if err != nil {
+		return false, make(map[string]string), err
+	}
+	var path = parsed.Path
+	var match = route.Match(path)
+	parameters, err = extractParamsFromRoute(route, path)
 	return match, parameters, err
 }
 
@@ -100,12 +159,12 @@ func (route *Route) PathWithFragment(parameters map[string]string, fragment stri
 
 // URL generate path from route
 func (route *Route) URL(parameters map[string]string) (string, error) {
-	return generateURL(route.schema, route.unsecureLogin, route.unsecurePassword, route.host, route.port, route.path, parameters, route.requirements)
+	return generateURL(route.scheme, route.unsecureLogin, route.unsecurePassword, route.host, route.port, route.path, parameters, route.requirements)
 }
 
 // URLWithFragment generate path from route and add anchor at the end
 func (route *Route) URLWithFragment(parameters map[string]string, fragment string) (string, error) {
-	var url, err = generateURL(route.schema, route.unsecureLogin, route.unsecurePassword, route.host, route.port, route.path, parameters, route.requirements)
+	var url, err = generateURL(route.scheme, route.unsecureLogin, route.unsecurePassword, route.host, route.port, route.path, parameters, route.requirements)
 	if err != nil {
 		return "", err
 	}
@@ -114,12 +173,12 @@ func (route *Route) URLWithFragment(parameters map[string]string, fragment strin
 
 // UnsecureURL generate path from route with login and password
 func (route *Route) UnsecureURL(login string, password string, parameters map[string]string) (string, error) {
-	return generateURL(route.schema, login, password, route.host, route.port, route.path, parameters, route.requirements)
+	return generateURL(route.scheme, login, password, route.host, route.port, route.path, parameters, route.requirements)
 }
 
 // UnsecureURLWithFragment generate path from route and add anchor at the end with login and password
 func (route *Route) UnsecureURLWithFragment(login string, password string, parameters map[string]string, fragment string) (string, error) {
-	var url, err = generateURL(route.schema, login, password, route.host, route.port, route.path, parameters, route.requirements)
+	var url, err = generateURL(route.scheme, login, password, route.host, route.port, route.path, parameters, route.requirements)
 	if err != nil {
 		return "", err
 	}

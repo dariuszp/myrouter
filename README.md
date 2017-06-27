@@ -26,14 +26,14 @@ This part will explain how to use "My Router"
 To create router that will handle "http://madmanlabs.com" on default port, just call NewMyRouter with parameters
 
 ```go
-// func NewMyRouter(schema string, host string, port int) *MyRouter
+// func NewMyRouter(scheme string, host string, port int) *MyRouter
 var router = NewMyRouter("http", "madmanlabs.com", 0)
 ```
 
 In case you want port in Your URL, just set value above 0
 
 ```go
-// func NewMyRouter(schema string, host string, port int) *MyRouter
+// func NewMyRouter(scheme string, host string, port int) *MyRouter
 var router = NewMyRouter("http", "madmanlabs.com", 443)
 ```
 

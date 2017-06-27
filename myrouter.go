@@ -28,22 +28,22 @@ const (
 var SupportedMethods = []string{MethodOptions, MethodGet, MethodHead, MethodPost, MethodPut, MethodDelete, MethodTrace, MethodConnect}
 
 //NewMyRouter create instance of MyRouter
-func NewMyRouter(schema string, host string, port int) *MyRouter {
+func NewMyRouter(scheme string, host string, port int) *MyRouter {
 	var verbs = make(map[string]map[string]*Route)
 	for _, verb := range SupportedMethods {
 		verbs[verb] = make(map[string]*Route)
 	}
-	var router = &MyRouter{schema, "", "", host, port, verbs, make(map[string]*Route)}
+	var router = &MyRouter{scheme, "", "", host, port, verbs, make(map[string]*Route)}
 	return router
 }
 
 //NewUnsecureMyRouter create instance of MyRouter
-func NewUnsecureMyRouter(schema string, login string, password string, host string, port int) *MyRouter {
+func NewUnsecureMyRouter(scheme string, login string, password string, host string, port int) *MyRouter {
 	var verbs = make(map[string]map[string]*Route)
 	for _, verb := range SupportedMethods {
 		verbs[verb] = make(map[string]*Route)
 	}
-	var router = &MyRouter{schema, login, password, host, port, verbs, make(map[string]*Route)}
+	var router = &MyRouter{scheme, login, password, host, port, verbs, make(map[string]*Route)}
 	return router
 }
 
@@ -70,12 +70,12 @@ func (router *MyRouter) Add(name string, methods []string, path string, requirem
 // AddCustom register method for verbs
 // name - name of the route
 // methods - list of methods that works with this route
-// schema - http, https, ftp etc...
+// scheme - http, https, ftp etc...
 // host - website host, for example example.com
 // port - leave empty if You don't want to change port
 // path - path after the host and port
 // requirements - map of regexp patterns (as strings) for route params
-func (router *MyRouter) AddCustom(name string, methods []string, schema string, unsecureLogin string, unsecurePassword string, host string, port int, path string, requirements map[string]string) (bool, error) {
+func (router *MyRouter) AddCustom(name string, methods []string, scheme string, unsecureLogin string, unsecurePassword string, host string, port int, path string, requirements map[string]string) (bool, error) {
 	var err error
 	var route *Route
 	var _, ok = router.routes[name]
@@ -91,7 +91,7 @@ func (router *MyRouter) AddCustom(name string, methods []string, schema string, 
 		}
 	}
 
-	route, err = NewRoute(name, methods, schema, host, port, path, requirements)
+	route, err = NewRoute(name, methods, scheme, host, port, path, requirements)
 
 	if err != nil {
 		return false, err
@@ -127,6 +127,11 @@ func (router *MyRouter) Remove(name string) bool {
 // MatchPath find route that match specified path
 func (router *MyRouter) MatchPath(path string) (*Route, map[string]string, error) {
 	return match(router, router.routes, path)
+}
+
+// MatchPath find route that match specified path
+func (router *MyRouter) MatchURL(url string) (*Route, map[string]string, error) {
+	return matchURL(router, router.routes, url)
 }
 
 // MatchPathByMethod find route that match specified path filtered by method
@@ -209,6 +214,16 @@ func match(router *MyRouter, list map[string]*Route, path string) (*Route, map[s
 	for _, route := range list {
 		if route.Match(path) {
 			var _, parameters, err = route.ParsePath(path)
+			return route, parameters, err
+		}
+	}
+	return nil, map[string]string{}, errors.New("No route match")
+}
+
+func matchURL(router *MyRouter, list map[string]*Route, url string) (*Route, map[string]string, error) {
+	for _, route := range list {
+		if route.MatchURL(url) {
+			var _, parameters, err = route.ParseURL(url)
 			return route, parameters, err
 		}
 	}

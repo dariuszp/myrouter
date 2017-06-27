@@ -179,13 +179,13 @@ func TestRegExpFromPathWithTwoRequirements(t *testing.T) {
 
 func TestUrl(t *testing.T) {
 	var expect = "https://example.com/api/user/5"
-	var schema = "https"
+	var scheme = "https"
 	var host = "example.com"
 	var port int
 	var path = "/api/user/{id}"
 	var parameters = map[string]string{"id": "5"}
 
-	var url, err = generateURL(schema, "", "", host, port, path, parameters, make(map[string]*regexp.Regexp))
+	var url, err = generateURL(scheme, "", "", host, port, path, parameters, make(map[string]*regexp.Regexp))
 	if err != nil {
 		t.Fail()
 	}
@@ -196,13 +196,13 @@ func TestUrl(t *testing.T) {
 
 func TestUrlTwoParameters(t *testing.T) {
 	var expect = "https://example.com/api/user/5/dariusz-poltorak"
-	var schema = "https"
+	var scheme = "https"
 	var host = "example.com"
 	var port int
 	var path = "/api/user/{id}/{slug}"
 	var parameters = map[string]string{"slug": "dariusz-poltorak", "id": "5"}
 
-	var url, err = generateURL(schema, "", "", host, port, path, parameters, make(map[string]*regexp.Regexp))
+	var url, err = generateURL(scheme, "", "", host, port, path, parameters, make(map[string]*regexp.Regexp))
 	if err != nil {
 		t.Fail()
 	}
@@ -213,13 +213,13 @@ func TestUrlTwoParameters(t *testing.T) {
 
 func TestUrlMissingParameters(t *testing.T) {
 	var expect = "https://example.com/api/user/5/dariusz-poltorak"
-	var schema = "https"
+	var scheme = "https"
 	var host = "example.com"
 	var port int
 	var path = "/api/user/{id}/{slug}"
 	var parameters = map[string]string{"id": "5"}
 
-	var url, err = generateURL(schema, "", "", host, port, path, parameters, make(map[string]*regexp.Regexp))
+	var url, err = generateURL(scheme, "", "", host, port, path, parameters, make(map[string]*regexp.Regexp))
 	if err == nil {
 		t.Fail()
 	}
@@ -230,13 +230,13 @@ func TestUrlMissingParameters(t *testing.T) {
 
 func TestUrlTwoParametersWithPort(t *testing.T) {
 	var expect = "https://example.com:80/api/user/5/dariusz-poltorak"
-	var schema = "https"
+	var scheme = "https"
 	var host = "example.com"
 	var port = 80
 	var path = "/api/user/{id}/{slug}"
 	var parameters = map[string]string{"slug": "dariusz-poltorak", "id": "5"}
 
-	var url, err = generateURL(schema, "", "", host, port, path, parameters, make(map[string]*regexp.Regexp))
+	var url, err = generateURL(scheme, "", "", host, port, path, parameters, make(map[string]*regexp.Regexp))
 	if err != nil {
 		t.Fail()
 	}

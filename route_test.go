@@ -27,7 +27,7 @@ func TestRouteCreation(t *testing.T) {
 		t.Fail()
 	}
 
-	if route.schema != "https" || route.host != "example.com" || route.port != 0 {
+	if route.scheme != "https" || route.host != "example.com" || route.port != 0 {
 		fmt.Println("Invalid route base url")
 		t.Fail()
 	}
@@ -74,7 +74,7 @@ func TestRouteCreationWithNoParams(t *testing.T) {
 		t.Fail()
 	}
 
-	if route.schema != "https" || route.host != "example.com" || route.port != 0 {
+	if route.scheme != "https" || route.host != "example.com" || route.port != 0 {
 		fmt.Println("Invalid route base url")
 		t.Fail()
 	}
