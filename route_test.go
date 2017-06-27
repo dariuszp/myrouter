@@ -95,7 +95,7 @@ func TestRouteCreationWithNoParams(t *testing.T) {
 	}
 }
 
-func TestGenerateURL(t *testing.T) {
+func TestURL(t *testing.T) {
 	var route *Route
 	var err error
 	var url string
@@ -106,7 +106,7 @@ func TestGenerateURL(t *testing.T) {
 		t.Fail()
 	}
 
-	url, err = route.GenerateURL(map[string]string{"id": "5"})
+	url, err = route.URL(map[string]string{"id": "5"})
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -118,7 +118,7 @@ func TestGenerateURL(t *testing.T) {
 	}
 }
 
-func TestGenerateURLWithNoParams(t *testing.T) {
+func TestURLWithNoParams(t *testing.T) {
 	var route *Route
 	var err error
 	var url string
@@ -129,7 +129,7 @@ func TestGenerateURLWithNoParams(t *testing.T) {
 		t.Fail()
 	}
 
-	url, err = route.GenerateURL(map[string]string{"id": "5"})
+	url, err = route.URL(map[string]string{"id": "5"})
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -141,7 +141,7 @@ func TestGenerateURLWithNoParams(t *testing.T) {
 	}
 }
 
-func TestGenerateURLWithLoginAndPassword(t *testing.T) {
+func TestURLWithLoginAndPassword(t *testing.T) {
 	var route *Route
 	var err error
 	var url string
@@ -155,7 +155,7 @@ func TestGenerateURLWithLoginAndPassword(t *testing.T) {
 		t.Fail()
 	}
 
-	url, err = route.GenerateURL(map[string]string{"id": "5"})
+	url, err = route.URL(map[string]string{"id": "5"})
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()

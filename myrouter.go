@@ -145,7 +145,7 @@ func (router *MyRouter) Path(name string, parameters map[string]string) (string,
 	if route == nil {
 		return "", errors.New(strings.Join([]string{"Invalid route name:", name}, " "))
 	}
-	return route.GeneratePath(parameters)
+	return route.Path(parameters)
 }
 
 // PathWithFragment will get route by name and generate path for it with anchor
@@ -154,7 +154,7 @@ func (router *MyRouter) PathWithFragment(name string, parameters map[string]stri
 	if route == nil {
 		return "", errors.New(strings.Join([]string{"Invalid route name:", name}, " "))
 	}
-	return route.GeneratePathWithFragment(parameters, fragment)
+	return route.PathWithFragment(parameters, fragment)
 }
 
 // URL will get route by name and generate url for it
@@ -163,7 +163,7 @@ func (router *MyRouter) URL(name string, parameters map[string]string) (string, 
 	if route == nil {
 		return "", errors.New(strings.Join([]string{"Invalid route name:", name}, " "))
 	}
-	return route.GenerateURL(parameters)
+	return route.URL(parameters)
 }
 
 // URLWithFragment will get route by name and generate url for it
@@ -172,7 +172,7 @@ func (router *MyRouter) URLWithFragment(name string, parameters map[string]strin
 	if route == nil {
 		return "", errors.New(strings.Join([]string{"Invalid route name:", name}, " "))
 	}
-	return route.GenerateURLWithFragment(parameters, fragment)
+	return route.URLWithFragment(parameters, fragment)
 }
 
 // UnsecureURL will get route by name and generate url for it
@@ -181,7 +181,7 @@ func (router *MyRouter) UnsecureURL(name string, login string, password string, 
 	if route == nil {
 		return "", errors.New(strings.Join([]string{"Invalid route name:", name}, " "))
 	}
-	return route.GenerateUnsecureURL(login, password, parameters)
+	return route.UnsecureURL(login, password, parameters)
 }
 
 // UnsecureURLWithFragment will get route by name and generate url for it
@@ -190,7 +190,7 @@ func (router *MyRouter) UnsecureURLWithFragment(name string, login string, passw
 	if route == nil {
 		return "", errors.New(strings.Join([]string{"Invalid route name:", name}, " "))
 	}
-	return route.GenerateUnsecureURLWithFragment(login, password, parameters, fragment)
+	return route.UnsecureURLWithFragment(login, password, parameters, fragment)
 }
 
 func match(router *MyRouter, list map[string]*Route, path string) (*Route, map[string]string, error) {

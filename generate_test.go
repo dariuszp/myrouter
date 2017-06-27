@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func testGenerateRegExpFromPathVerification(t *testing.T, path string, url string, expect string, requirements map[string]*regexp.Regexp) {
+func testRegExpFromPathVerification(t *testing.T, path string, url string, expect string, requirements map[string]*regexp.Regexp) {
 	var regexp, err = generateRegexpFromPath(path, requirements)
 	if err != nil {
 		fmt.Println(err)
@@ -25,7 +25,7 @@ func testGenerateRegExpFromPathVerification(t *testing.T, path string, url strin
 	}
 }
 
-func testGenerateRegExpFromPathValueVerification(t *testing.T, path string, url string, expect []string, requirements map[string]*regexp.Regexp) {
+func testRegExpFromPathValueVerification(t *testing.T, path string, url string, expect []string, requirements map[string]*regexp.Regexp) {
 	var regexp, err = generateRegexpFromPath(path, requirements)
 	if err != nil {
 		fmt.Println(err)
@@ -49,7 +49,7 @@ func testGenerateRegExpFromPathValueVerification(t *testing.T, path string, url 
 	}
 }
 
-func TestGenerateEmptyPath(t *testing.T) {
+func TestEmptyPath(t *testing.T) {
 	var path, err = generatePath("", make(map[string]string), make(map[string]*regexp.Regexp))
 	if err != nil {
 		t.Fail()
@@ -59,7 +59,7 @@ func TestGenerateEmptyPath(t *testing.T) {
 	}
 }
 
-func TestGeneratePathWithMissingParameter(t *testing.T) {
+func TestPathWithMissingParameter(t *testing.T) {
 	var path, err = generatePath("/{id}", make(map[string]string), make(map[string]*regexp.Regexp))
 	if err == nil {
 		t.Fail()
@@ -70,7 +70,7 @@ func TestGeneratePathWithMissingParameter(t *testing.T) {
 	}
 }
 
-func TestGeneratePathWithParameter(t *testing.T) {
+func TestPathWithParameter(t *testing.T) {
 	var path, err = generatePath("/{id}", map[string]string{"id": "test"}, make(map[string]*regexp.Regexp))
 	if err != nil {
 		t.Fail()
@@ -81,7 +81,7 @@ func TestGeneratePathWithParameter(t *testing.T) {
 	}
 }
 
-func TestGeneratePathWithExtraParameter(t *testing.T) {
+func TestPathWithExtraParameter(t *testing.T) {
 	var path, err = generatePath("/{id}", map[string]string{"id": "test", "slug": "poltorak-dariusz"}, make(map[string]*regexp.Regexp))
 	if err != nil {
 		t.Fail()
@@ -92,7 +92,7 @@ func TestGeneratePathWithExtraParameter(t *testing.T) {
 	}
 }
 
-func TestGeneratePathWithTwoParameters(t *testing.T) {
+func TestPathWithTwoParameters(t *testing.T) {
 	var path, err = generatePath("/{id}/{slug}", map[string]string{"id": "test", "slug": "poltorak-dariusz"}, make(map[string]*regexp.Regexp))
 	if err != nil {
 		t.Fail()
@@ -103,81 +103,81 @@ func TestGeneratePathWithTwoParameters(t *testing.T) {
 	}
 }
 
-func TestGenerateRegExpFromPathNoArgs(t *testing.T) {
+func TestRegExpFromPathNoArgs(t *testing.T) {
 	var path = "/api/user"
 	var url = "/api/user"
 	var expect = "/api/user"
 
-	testGenerateRegExpFromPathVerification(t, path, url, expect, map[string]*regexp.Regexp{})
+	testRegExpFromPathVerification(t, path, url, expect, map[string]*regexp.Regexp{})
 }
 
-func TestGenerateRegExpFromPathSingleArg(t *testing.T) {
+func TestRegExpFromPathSingleArg(t *testing.T) {
 	var path = "/api/user/{id}"
 	var url = "/api/user/5"
 	var expect = "/api/user/([^/]+)"
 
-	testGenerateRegExpFromPathVerification(t, path, url, expect, map[string]*regexp.Regexp{})
+	testRegExpFromPathVerification(t, path, url, expect, map[string]*regexp.Regexp{})
 }
 
-func TestGenerateRegExpFromPathSingleCopiedArg(t *testing.T) {
+func TestRegExpFromPathSingleCopiedArg(t *testing.T) {
 	var path = "/api/user/{id}/user-{id}"
 	var url = "/api/user/5/user-5"
 	var expect = "/api/user/([^/]+)/user-([^/]+)"
 
-	testGenerateRegExpFromPathVerification(t, path, url, expect, map[string]*regexp.Regexp{})
+	testRegExpFromPathVerification(t, path, url, expect, map[string]*regexp.Regexp{})
 }
 
-func TestGenerateRegExpFromPathTwoArgs(t *testing.T) {
+func TestRegExpFromPathTwoArgs(t *testing.T) {
 	var path = "/api/user/{id}/client-{slug}"
 	var url = "/api/user/5/client-poltorak-dariusz"
 	var expect = "/api/user/([^/]+)/client-([^/]+)"
 
-	testGenerateRegExpFromPathVerification(t, path, url, expect, map[string]*regexp.Regexp{})
+	testRegExpFromPathVerification(t, path, url, expect, map[string]*regexp.Regexp{})
 }
 
-func TestGenerateRegExpFromPathNoValues(t *testing.T) {
+func TestRegExpFromPathNoValues(t *testing.T) {
 	var path = "/api/user/5/client-poltorak-dariusz"
 	var url = "/api/user/5/client-poltorak-dariusz"
 	var expect = []string{}
 
-	testGenerateRegExpFromPathValueVerification(t, path, url, expect, map[string]*regexp.Regexp{})
+	testRegExpFromPathValueVerification(t, path, url, expect, map[string]*regexp.Regexp{})
 }
 
-func TestGenerateRegExpFromPathOneValue(t *testing.T) {
+func TestRegExpFromPathOneValue(t *testing.T) {
 	var path = "/api/user/{id}"
 	var url = "/api/user/5"
 	var expect = []string{"5"}
 
-	testGenerateRegExpFromPathValueVerification(t, path, url, expect, map[string]*regexp.Regexp{})
+	testRegExpFromPathValueVerification(t, path, url, expect, map[string]*regexp.Regexp{})
 }
 
-func TestGenerateRegExpFromPathTwoValues(t *testing.T) {
+func TestRegExpFromPathTwoValues(t *testing.T) {
 	var path = "/api/user/{id}/client-{slug}"
 	var url = "/api/user/5/client-poltorak-dariusz"
 	var expect = []string{"5", "poltorak-dariusz"}
 
-	testGenerateRegExpFromPathValueVerification(t, path, url, expect, map[string]*regexp.Regexp{})
+	testRegExpFromPathValueVerification(t, path, url, expect, map[string]*regexp.Regexp{})
 }
 
-func TestGenerateRegExpFromPathWithRequirement(t *testing.T) {
+func TestRegExpFromPathWithRequirement(t *testing.T) {
 	var path = "/api/user/{id}/client-{slug}"
 	var url = "/api/user/5/client-poltorak-dariusz"
 	var expect = "/api/user/([^/]+)/client-([a-z\\-]+)"
 	var requirements = map[string]*regexp.Regexp{"slug": regexp.MustCompile("[a-z\\-]+")}
 
-	testGenerateRegExpFromPathVerification(t, path, url, expect, requirements)
+	testRegExpFromPathVerification(t, path, url, expect, requirements)
 }
 
-func TestGenerateRegExpFromPathWithTwoRequirements(t *testing.T) {
+func TestRegExpFromPathWithTwoRequirements(t *testing.T) {
 	var path = "/api/user/{id}/client-{slug}"
 	var url = "/api/user/5/client-poltorak-dariusz"
 	var expect = "/api/user/([1-9]+[0-9]*)/client-([a-z\\-]+)"
 	var requirements = map[string]*regexp.Regexp{"id": regexp.MustCompile("[1-9]+[0-9]*"), "slug": regexp.MustCompile("[a-z\\-]+")}
 
-	testGenerateRegExpFromPathVerification(t, path, url, expect, requirements)
+	testRegExpFromPathVerification(t, path, url, expect, requirements)
 }
 
-func TestGenerateUrl(t *testing.T) {
+func TestUrl(t *testing.T) {
 	var expect = "https://example.com/api/user/5"
 	var schema = "https"
 	var host = "example.com"
@@ -194,7 +194,7 @@ func TestGenerateUrl(t *testing.T) {
 	}
 }
 
-func TestGenerateUrlTwoParameters(t *testing.T) {
+func TestUrlTwoParameters(t *testing.T) {
 	var expect = "https://example.com/api/user/5/dariusz-poltorak"
 	var schema = "https"
 	var host = "example.com"
@@ -211,7 +211,7 @@ func TestGenerateUrlTwoParameters(t *testing.T) {
 	}
 }
 
-func TestGenerateUrlMissingParameters(t *testing.T) {
+func TestUrlMissingParameters(t *testing.T) {
 	var expect = "https://example.com/api/user/5/dariusz-poltorak"
 	var schema = "https"
 	var host = "example.com"
@@ -228,7 +228,7 @@ func TestGenerateUrlMissingParameters(t *testing.T) {
 	}
 }
 
-func TestGenerateUrlTwoParametersWithPort(t *testing.T) {
+func TestUrlTwoParametersWithPort(t *testing.T) {
 	var expect = "https://example.com:80/api/user/5/dariusz-poltorak"
 	var schema = "https"
 	var host = "example.com"
@@ -245,7 +245,7 @@ func TestGenerateUrlTwoParametersWithPort(t *testing.T) {
 	}
 }
 
-func TestGeneratePathWithTwoParametersWithInvalidRequirement(t *testing.T) {
+func TestPathWithTwoParametersWithInvalidRequirement(t *testing.T) {
 	var requirements = map[string]*regexp.Regexp{"id": regexp.MustCompile("[0-9]+")}
 	var path, err = generatePath("/{id}/{slug}", map[string]string{"id": "test", "slug": "poltorak-dariusz"}, requirements)
 	if err == nil {
@@ -257,7 +257,7 @@ func TestGeneratePathWithTwoParametersWithInvalidRequirement(t *testing.T) {
 	}
 }
 
-func TestGeneratePathWithTwoParametersWithTwoInvalidRequirements(t *testing.T) {
+func TestPathWithTwoParametersWithTwoInvalidRequirements(t *testing.T) {
 	var requirements = map[string]*regexp.Regexp{"id": regexp.MustCompile("[0-9]+"), "slug": regexp.MustCompile("[A-Z]+")}
 	var path, err = generatePath("/{id}/{slug}", map[string]string{"id": "test", "slug": "poltorak-dariusz"}, requirements)
 	if err == nil {
@@ -269,7 +269,7 @@ func TestGeneratePathWithTwoParametersWithTwoInvalidRequirements(t *testing.T) {
 	}
 }
 
-func TestGeneratePathWithTwoParametersWithValidRequirement(t *testing.T) {
+func TestPathWithTwoParametersWithValidRequirement(t *testing.T) {
 	var requirements = map[string]*regexp.Regexp{"id": regexp.MustCompile("[0-9]+")}
 	var path, err = generatePath("/{id}/{slug}", map[string]string{"id": "5", "slug": "poltorak-dariusz"}, requirements)
 	if err != nil {
@@ -281,7 +281,7 @@ func TestGeneratePathWithTwoParametersWithValidRequirement(t *testing.T) {
 	}
 }
 
-func TestGeneratePathWithTwoParametersWithTwoValidRequirement(t *testing.T) {
+func TestPathWithTwoParametersWithTwoValidRequirement(t *testing.T) {
 	var requirements = map[string]*regexp.Regexp{"id": regexp.MustCompile("[0-9]+"), "slug": regexp.MustCompile("[a-z\\-]+")}
 	var path, err = generatePath("/{id}/{slug}", map[string]string{"id": "5", "slug": "poltorak-dariusz"}, requirements)
 	if err != nil {

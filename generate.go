@@ -11,7 +11,7 @@ import (
 var defaultReadParameterPattern = "[^/]+"
 var defaultReadParameterRegexp = regexp.MustCompile(defaultReadParameterPattern)
 
-//GenerateRegExpFromPath turns path to regexp pattern
+//RegExpFromPath turns path to regexp pattern
 func generateRegexpFromPath(path string, requirements map[string]*regexp.Regexp) (*regexp.Regexp, error) {
 	var parameterEscapedName, escapedPath, result, patternReplace string
 	var ok bool
@@ -39,7 +39,7 @@ func generateRegexpFromPath(path string, requirements map[string]*regexp.Regexp)
 	return regexp.Compile(result)
 }
 
-// GeneratePath fill url pattern with parameters
+// Path fill url pattern with parameters
 func generatePath(path string, parameters map[string]string, requirements map[string]*regexp.Regexp) (string, error) {
 	var extracted = extractParamNames(path)
 	for _, parameterName := range extracted {
@@ -73,7 +73,7 @@ func generatePath(path string, parameters map[string]string, requirements map[st
 	return path, nil
 }
 
-// GenerateURL combine host, port and path to create absolute url
+// URL combine host, port and path to create absolute url
 func generateURL(schema string, login string, password string, host string, port int, path string, parameters map[string]string, requirements map[string]*regexp.Regexp) (string, error) {
 	var hostname string
 
