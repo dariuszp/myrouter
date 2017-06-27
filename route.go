@@ -87,11 +87,21 @@ func (route *Route) GeneratePath(parameters map[string]string) (string, error) {
 	return generatePath(route.path, parameters, route.requirements)
 }
 
+// GeneratePathWithFragment generate path from route and add anchor at the end
+func (route *Route) GeneratePathWithFragment(parameters map[string]string, fragment string) (string, error) {
+	var path, err = generatePath(route.path, parameters, route.requirements)
+	if err != nil {
+		return "", err
+	}
+	return strings.Join([]string{path, fragment}, "#"), nil
+}
+
 // GenerateURL generate path from route
 func (route *Route) GenerateURL(parameters map[string]string) (string, error) {
 	return generateURL(route.schema, route.host, route.port, route.path, parameters, route.requirements)
 }
 
+// GenerateURLWithFragment generate path from route and add anchor at the end
 func (route *Route) GenerateURLWithFragment(parameters map[string]string, fragment string) (string, error) {
 	var url, err = generateURL(route.schema, route.host, route.port, route.path, parameters, route.requirements)
 	if err != nil {
@@ -99,5 +109,3 @@ func (route *Route) GenerateURLWithFragment(parameters map[string]string, fragme
 	}
 	return strings.Join([]string{url, fragment}, "#"), nil
 }
-
-// TODO: Add url anchor and query params

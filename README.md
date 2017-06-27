@@ -15,7 +15,7 @@ I do not bundle this router with any manager for handlers, controllers or whatev
 * Route params are check against regexp, default regexp for route param is "[^/]+" so "/" in route param is not allowed by default
 * when you match path, you get route data and params passed to route
 * if more than one route match path, first will be working
-* MatchByMethod is little quicker because it will loop only over routes with that method
+* MatchByMethod is little quicker than Match because it will loop only over routes with that method
 
 License: **MIT**
 
