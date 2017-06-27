@@ -8,16 +8,16 @@ import (
 func createRouter() *MyRouter {
 	var router = NewMyRouter("http", "example.com", 0)
 
-	router.AddRoute("dashboard", []string{}, "/dashboard", make(map[string]string))
-	router.AddRoute("profile", []string{"GET"}, "/user/{slug}", map[string]string{"slug": "[a-z\\-]+"})
-	router.AddRoute("message", []string{"POST", "PUT"}, "/message/{channel}/{type}", map[string]string{"type": "error|success"})
+	router.Add("dashboard", []string{}, "/dashboard", make(map[string]string))
+	router.Add("profile", []string{"GET"}, "/user/{slug}", map[string]string{"slug": "[a-z\\-]+"})
+	router.Add("message", []string{"POST", "PUT"}, "/message/{channel}/{type}", map[string]string{"type": "error|success"})
 
 	return router
 }
 
 func TestAddInvalidRoute(t *testing.T) {
 	var router = createRouter()
-	var success, err = router.AddRoute("error", []string{}, "", make(map[string]string))
+	var success, err = router.Add("error", []string{}, "", make(map[string]string))
 	if success {
 		t.Fail()
 	}
@@ -29,7 +29,7 @@ func TestAddInvalidRoute(t *testing.T) {
 
 func TestRemoveRoute(t *testing.T) {
 	var router = createRouter()
-	router.RemoveRoute("profile")
+	router.Remove("profile")
 
 	var route, ok = router.routes["profile"]
 	if ok {
@@ -116,7 +116,7 @@ func TestMatchPathByWrongMethod(t *testing.T) {
 
 func TestGetRouteByName(t *testing.T) {
 	var router = createRouter()
-	var route = router.GetRouteByName("profile")
+	var route = router.Get("profile")
 
 	if route.name != "profile" {
 		t.Fail()
@@ -125,18 +125,18 @@ func TestGetRouteByName(t *testing.T) {
 
 func TestGetRouteByInvalidName(t *testing.T) {
 	var router = createRouter()
-	var route = router.GetRouteByName("mispelled-profile")
+	var route = router.Get("mispelled-profile")
 
 	if route != nil {
 		t.Fail()
 	}
 }
 
-func TestGeneratePath(t *testing.T) {
+func TestPath(t *testing.T) {
 	var router = createRouter()
 
 	//router.AddRoute("profile", []string{"GET"}, "/user/{slug}", map[string]string{"slug": "[a-z\\-]+"})
-	var path, err = router.GeneratePath("profile", map[string]string{"slug": "poltorak-dariusz"})
+	var path, err = router.Path("profile", map[string]string{"slug": "poltorak-dariusz"})
 
 	if path != "/user/poltorak-dariusz" {
 		t.Fail()
@@ -147,11 +147,11 @@ func TestGeneratePath(t *testing.T) {
 	}
 }
 
-func TestGeneratePathWithExtraParam(t *testing.T) {
+func TestPathWithExtraParam(t *testing.T) {
 	var router = createRouter()
 
 	//router.AddRoute("profile", []string{"GET"}, "/user/{slug}", map[string]string{"slug": "[a-z\\-]+"})
-	var path, err = router.GeneratePath("profile", map[string]string{"slug": "poltorak-dariusz", "id": "5"})
+	var path, err = router.Path("profile", map[string]string{"slug": "poltorak-dariusz", "id": "5"})
 
 	if path != "/user/poltorak-dariusz?id=5" {
 		t.Fail()
@@ -162,11 +162,11 @@ func TestGeneratePathWithExtraParam(t *testing.T) {
 	}
 }
 
-func TestGeneratePathWithExtraParamAndFragment(t *testing.T) {
+func TestPathWithExtraParamAndFragment(t *testing.T) {
 	var router = createRouter()
 
 	//router.AddRoute("profile", []string{"GET"}, "/user/{slug}", map[string]string{"slug": "[a-z\\-]+"})
-	var path, err = router.GeneratePathWithFragment("profile", map[string]string{"slug": "poltorak-dariusz", "id": "5"}, "test")
+	var path, err = router.PathWithFragment("profile", map[string]string{"slug": "poltorak-dariusz", "id": "5"}, "test")
 
 	if path != "/user/poltorak-dariusz?id=5#test" {
 		fmt.Println(path)
@@ -178,11 +178,11 @@ func TestGeneratePathWithExtraParamAndFragment(t *testing.T) {
 	}
 }
 
-func TestGeneratePathWithMissingParams(t *testing.T) {
+func TestPathWithMissingParams(t *testing.T) {
 	var router = createRouter()
 
 	//router.AddRoute("profile", []string{"GET"}, "/user/{slug}", map[string]string{"slug": "[a-z\\-]+"})
-	var path, err = router.GeneratePath("profile", make(map[string]string))
+	var path, err = router.Path("profile", make(map[string]string))
 
 	if path != "" {
 		t.Fail()
@@ -193,11 +193,11 @@ func TestGeneratePathWithMissingParams(t *testing.T) {
 	}
 }
 
-func TestGenerateRouterURL(t *testing.T) {
+func TestRouterURL(t *testing.T) {
 	var router = createRouter()
 
 	//router.AddRoute("profile", []string{"GET"}, "/user/{slug}", map[string]string{"slug": "[a-z\\-]+"})
-	var path, err = router.GenerateURL("profile", map[string]string{"slug": "poltorak-dariusz"})
+	var path, err = router.URL("profile", map[string]string{"slug": "poltorak-dariusz"})
 
 	if path != "http://example.com/user/poltorak-dariusz" {
 		t.Fail()
@@ -208,11 +208,11 @@ func TestGenerateRouterURL(t *testing.T) {
 	}
 }
 
-func TestGenerateRouterURLWithFragment(t *testing.T) {
+func TestRouterURLWithFragment(t *testing.T) {
 	var router = createRouter()
 
 	//router.AddRoute("profile", []string{"GET"}, "/user/{slug}", map[string]string{"slug": "[a-z\\-]+"})
-	var path, err = router.GenerateURLWithFragment("profile", map[string]string{"slug": "poltorak-dariusz"}, "test")
+	var path, err = router.URLWithFragment("profile", map[string]string{"slug": "poltorak-dariusz"}, "test")
 
 	if path != "http://example.com/user/poltorak-dariusz#test" {
 		t.Fail()
@@ -223,11 +223,11 @@ func TestGenerateRouterURLWithFragment(t *testing.T) {
 	}
 }
 
-func TestGenerateUnsecureRouterURL(t *testing.T) {
+func TestUnsecureRouterURL(t *testing.T) {
 	var router = createRouter()
 
 	//router.AddRoute("profile", []string{"GET"}, "/user/{slug}", map[string]string{"slug": "[a-z\\-]+"})
-	var path, err = router.GenerateUnsecureURL("profile", "test", "test2", map[string]string{"slug": "poltorak-dariusz"})
+	var path, err = router.UnsecureURL("profile", "test", "test2", map[string]string{"slug": "poltorak-dariusz"})
 
 	if path != "http://test:test2@example.com/user/poltorak-dariusz" {
 		t.Fail()
@@ -238,11 +238,11 @@ func TestGenerateUnsecureRouterURL(t *testing.T) {
 	}
 }
 
-func TestGenerateUnsecureRouterURLWithFragment(t *testing.T) {
+func TestUnsecureRouterURLWithFragment(t *testing.T) {
 	var router = createRouter()
 
 	//router.AddRoute("profile", []string{"GET"}, "/user/{slug}", map[string]string{"slug": "[a-z\\-]+"})
-	var path, err = router.GenerateUnsecureURLWithFragment("profile", "test", "test2", map[string]string{"slug": "poltorak-dariusz"}, "test")
+	var path, err = router.UnsecureURLWithFragment("profile", "test", "test2", map[string]string{"slug": "poltorak-dariusz"}, "test")
 
 	if path != "http://test:test2@example.com/user/poltorak-dariusz#test" {
 		t.Fail()
