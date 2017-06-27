@@ -164,7 +164,7 @@ func (router *MyRouter) GeneratePathWithFragment(name string, parameters map[str
 	if route == nil {
 		return "", errors.New(strings.Join([]string{"Invalid route name:", name}, " "))
 	}
-	return route.GenerateURLWithFragment(parameters, fragment)
+	return route.GeneratePathWithFragment(parameters, fragment)
 }
 
 // GenerateURL will get route by name and generate url for it
