@@ -17,5 +17,25 @@ I do not bundle this router with any manager for handlers, controllers or whatev
 * if more than one route match path, first will be working
 * MatchByMethod is little quicker than Match because it will loop only over routes with that method
 
+## Usage
+
+This part will explain how to use "My Router"
+
+### Creating router
+
+To create router that will handle "http://madmanlabs.com" on default port, just call NewMyRouter with parameters
+
+```go
+// func NewMyRouter(schema string, host string, port int) *MyRouter
+var router = NewMyRouter("http", "madmanlabs.com", 0)
+```
+
+In case you want port in Your URL, just set value above 0
+
+```go
+// func NewMyRouter(schema string, host string, port int) *MyRouter
+var router = NewMyRouter("http", "madmanlabs.com", 443)
+```
+
 License: **MIT**
 
