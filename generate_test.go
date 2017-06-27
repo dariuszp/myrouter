@@ -185,7 +185,7 @@ func TestGenerateUrl(t *testing.T) {
 	var path = "/api/user/{id}"
 	var parameters = map[string]string{"id": "5"}
 
-	var url, err = generateURL(schema, host, port, path, parameters, make(map[string]*regexp.Regexp))
+	var url, err = generateURL(schema, "", "", host, port, path, parameters, make(map[string]*regexp.Regexp))
 	if err != nil {
 		t.Fail()
 	}
@@ -202,7 +202,7 @@ func TestGenerateUrlTwoParameters(t *testing.T) {
 	var path = "/api/user/{id}/{slug}"
 	var parameters = map[string]string{"slug": "dariusz-poltorak", "id": "5"}
 
-	var url, err = generateURL(schema, host, port, path, parameters, make(map[string]*regexp.Regexp))
+	var url, err = generateURL(schema, "", "", host, port, path, parameters, make(map[string]*regexp.Regexp))
 	if err != nil {
 		t.Fail()
 	}
@@ -219,7 +219,7 @@ func TestGenerateUrlMissingParameters(t *testing.T) {
 	var path = "/api/user/{id}/{slug}"
 	var parameters = map[string]string{"id": "5"}
 
-	var url, err = generateURL(schema, host, port, path, parameters, make(map[string]*regexp.Regexp))
+	var url, err = generateURL(schema, "", "", host, port, path, parameters, make(map[string]*regexp.Regexp))
 	if err == nil {
 		t.Fail()
 	}
@@ -236,7 +236,7 @@ func TestGenerateUrlTwoParametersWithPort(t *testing.T) {
 	var path = "/api/user/{id}/{slug}"
 	var parameters = map[string]string{"slug": "dariusz-poltorak", "id": "5"}
 
-	var url, err = generateURL(schema, host, port, path, parameters, make(map[string]*regexp.Regexp))
+	var url, err = generateURL(schema, "", "", host, port, path, parameters, make(map[string]*regexp.Regexp))
 	if err != nil {
 		t.Fail()
 	}

@@ -27,16 +27,6 @@ const (
 // SupportedMethods contains all supported HTTP verbs
 var SupportedMethods = []string{MethodOptions, MethodGet, MethodHead, MethodPost, MethodPut, MethodDelete, MethodTrace, MethodConnect}
 
-func match(router *MyRouter, list map[string]*Route, path string) (*Route, map[string]string, error) {
-	for _, route := range list {
-		if route.Match(path) {
-			var _, parameters, err = route.ParsePath(path)
-			return route, parameters, err
-		}
-	}
-	return nil, map[string]string{}, errors.New("No route match")
-}
-
 //NewMyRouter create instance of MyRouter
 func NewMyRouter(schema string, host string, port int) *MyRouter {
 	var verbs = make(map[string]map[string]*Route)
@@ -62,7 +52,7 @@ type MyRouter struct {
 // path - path after the host and port
 // requirements - map of regexp patterns (as strings) for route params
 func (router *MyRouter) AddRoute(name string, methods []string, path string, requirements map[string]string) (bool, error) {
-	return router.AddCustomRoute(name, methods, router.defaultSchema, router.defaultHost, router.defaultPort, path, requirements)
+	return router.AddCustomRoute(name, methods, router.defaultSchema, "", "", router.defaultHost, router.defaultPort, path, requirements)
 }
 
 // AddCustomRoute register method for verbs
@@ -73,7 +63,7 @@ func (router *MyRouter) AddRoute(name string, methods []string, path string, req
 // port - leave empty if You don't want to change port
 // path - path after the host and port
 // requirements - map of regexp patterns (as strings) for route params
-func (router *MyRouter) AddCustomRoute(name string, methods []string, schema string, host string, port int, path string, requirements map[string]string) (bool, error) {
+func (router *MyRouter) AddCustomRoute(name string, methods []string, schema string, unsecureLogin string, unsecurePassword string, host string, port int, path string, requirements map[string]string) (bool, error) {
 	var err error
 	var route *Route
 	var _, ok = router.routes[name]
@@ -90,9 +80,13 @@ func (router *MyRouter) AddCustomRoute(name string, methods []string, schema str
 	}
 
 	route, err = NewRoute(name, methods, schema, host, port, path, requirements)
+
 	if err != nil {
 		return false, err
 	}
+
+	route.unsecureLogin = unsecureLogin
+	route.unsecurePassword = unsecurePassword
 
 	for _, method := range methods {
 		method = strings.ToLower(method)
@@ -143,4 +137,68 @@ func (router *MyRouter) GetRouteByName(name string) *Route {
 		return nil
 	}
 	return route
+}
+
+func match(router *MyRouter, list map[string]*Route, path string) (*Route, map[string]string, error) {
+	for _, route := range list {
+		if route.Match(path) {
+			var _, parameters, err = route.ParsePath(path)
+			return route, parameters, err
+		}
+	}
+	return nil, map[string]string{}, errors.New("No route match")
+}
+
+// GeneratePath will get route by name and generate path for it
+func (router *MyRouter) GeneratePath(name string, parameters map[string]string) (string, error) {
+	var route = router.GetRouteByName(name)
+	if route == nil {
+		return "", errors.New(strings.Join([]string{"Invalid route name:", name}, " "))
+	}
+	return route.GeneratePath(parameters)
+}
+
+// GeneratePathWithFragment will get route by name and generate path for it with anchor
+func (router *MyRouter) GeneratePathWithFragment(name string, parameters map[string]string, fragment string) (string, error) {
+	var route = router.GetRouteByName(name)
+	if route == nil {
+		return "", errors.New(strings.Join([]string{"Invalid route name:", name}, " "))
+	}
+	return route.GenerateURLWithFragment(parameters, fragment)
+}
+
+// GenerateURL will get route by name and generate url for it
+func (router *MyRouter) GenerateURL(name string, parameters map[string]string) (string, error) {
+	var route = router.GetRouteByName(name)
+	if route == nil {
+		return "", errors.New(strings.Join([]string{"Invalid route name:", name}, " "))
+	}
+	return route.GenerateURL(parameters)
+}
+
+// GenerateURLWithFragment will get route by name and generate url for it
+func (router *MyRouter) GenerateURLWithFragment(name string, parameters map[string]string, fragment string) (string, error) {
+	var route = router.GetRouteByName(name)
+	if route == nil {
+		return "", errors.New(strings.Join([]string{"Invalid route name:", name}, " "))
+	}
+	return route.GenerateURLWithFragment(parameters, fragment)
+}
+
+// GenerateUnsecureURL will get route by name and generate url for it
+func (router *MyRouter) GenerateUnsecureURL(name string, login string, password string, parameters map[string]string) (string, error) {
+	var route = router.GetRouteByName(name)
+	if route == nil {
+		return "", errors.New(strings.Join([]string{"Invalid route name:", name}, " "))
+	}
+	return route.GenerateUnsecureURL(login, password, parameters)
+}
+
+// GenerateUnsecureURLWithFragment will get route by name and generate url for it
+func (router *MyRouter) GenerateUnsecureURLWithFragment(name string, login string, password string, parameters map[string]string, fragment string) (string, error) {
+	var route = router.GetRouteByName(name)
+	if route == nil {
+		return "", errors.New(strings.Join([]string{"Invalid route name:", name}, " "))
+	}
+	return route.GenerateUnsecureURLWithFragment(login, password, parameters, fragment)
 }

@@ -140,3 +140,29 @@ func TestGenerateURLWithNoParams(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestGenerateURLWithLoginAndPassword(t *testing.T) {
+	var route *Route
+	var err error
+	var url string
+	var methods = []string{"get", "post"}
+	route, err = NewRoute("test", methods, "https", "example.com", 0, "/api/user", map[string]string{"id": "[1-9]+[0-9]*"})
+	route.unsecureLogin = "darek"
+	route.unsecurePassword = "poltorak"
+
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+
+	url, err = route.GenerateURL(map[string]string{"id": "5"})
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+
+	if url != "https://darek:poltorak@example.com/api/user?id=5" {
+		fmt.Println(strings.Join([]string{"Invalid url", url}, " "))
+		t.Fail()
+	}
+}

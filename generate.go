@@ -74,12 +74,18 @@ func generatePath(path string, parameters map[string]string, requirements map[st
 }
 
 // GenerateURL combine host, port and path to create absolute url
-func generateURL(schema string, host string, port int, path string, parameters map[string]string, requirements map[string]*regexp.Regexp) (string, error) {
+func generateURL(schema string, login string, password string, host string, port int, path string, parameters map[string]string, requirements map[string]*regexp.Regexp) (string, error) {
 	var hostname string
+
+	var basicAuth = ""
+	if len(login) > 0 || len(password) > 0 {
+		basicAuth = strings.Join([]string{login, ":", password, "@"}, "")
+	}
+
 	if port > 0 {
-		hostname = strings.Join([]string{schema, "://", host, ":", strconv.Itoa(port)}, "")
+		hostname = strings.Join([]string{schema, "://", basicAuth, host, ":", strconv.Itoa(port)}, "")
 	} else {
-		hostname = strings.Join([]string{schema, "://", host}, "")
+		hostname = strings.Join([]string{schema, "://", basicAuth, host}, "")
 	}
 	var generatedPath, err = generatePath(path, parameters, requirements)
 	if err != nil {

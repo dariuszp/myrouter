@@ -8,15 +8,17 @@ import (
 
 // Route represent single http route
 type Route struct {
-	name         string
-	methods      []string
-	schema       string
-	host         string
-	port         int
-	path         string
-	parameters   []string
-	matchRegexp  *regexp.Regexp
-	requirements map[string]*regexp.Regexp
+	name             string
+	methods          []string
+	schema           string
+	unsecureLogin    string
+	unsecurePassword string
+	host             string
+	port             int
+	path             string
+	parameters       []string
+	matchRegexp      *regexp.Regexp
+	requirements     map[string]*regexp.Regexp
 }
 
 // NewRoute create new route
@@ -43,7 +45,7 @@ func NewRoute(name string, methods []string, schema string, host string, port in
 	}
 
 	var parameters = extractParamNames(path)
-	return &Route{name, methods, schema, host, port, path, parameters, regexpFromPath, requirementsRegexp}, nil
+	return &Route{name, methods, schema, "", "", host, port, path, parameters, regexpFromPath, requirementsRegexp}, nil
 }
 
 // SetMethods replace list of methods
@@ -98,12 +100,26 @@ func (route *Route) GeneratePathWithFragment(parameters map[string]string, fragm
 
 // GenerateURL generate path from route
 func (route *Route) GenerateURL(parameters map[string]string) (string, error) {
-	return generateURL(route.schema, route.host, route.port, route.path, parameters, route.requirements)
+	return generateURL(route.schema, route.unsecureLogin, route.unsecurePassword, route.host, route.port, route.path, parameters, route.requirements)
 }
 
 // GenerateURLWithFragment generate path from route and add anchor at the end
 func (route *Route) GenerateURLWithFragment(parameters map[string]string, fragment string) (string, error) {
-	var url, err = generateURL(route.schema, route.host, route.port, route.path, parameters, route.requirements)
+	var url, err = generateURL(route.schema, route.unsecureLogin, route.unsecurePassword, route.host, route.port, route.path, parameters, route.requirements)
+	if err != nil {
+		return "", err
+	}
+	return strings.Join([]string{url, fragment}, "#"), nil
+}
+
+// GenerateUnsecureURL generate path from route with login and password
+func (route *Route) GenerateUnsecureURL(login string, password string, parameters map[string]string) (string, error) {
+	return generateURL(route.schema, login, password, route.host, route.port, route.path, parameters, route.requirements)
+}
+
+// GenerateUnsecureURLWithFragment generate path from route and add anchor at the end with login and password
+func (route *Route) GenerateUnsecureURLWithFragment(login string, password string, parameters map[string]string, fragment string) (string, error) {
+	var url, err = generateURL(route.schema, login, password, route.host, route.port, route.path, parameters, route.requirements)
 	if err != nil {
 		return "", err
 	}
