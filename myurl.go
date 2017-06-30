@@ -3,8 +3,7 @@ package myrouter
 // MyURL is a result from parsing url/path
 type MyURL struct {
 	Scheme     string
-	Login      string
-	Password   string
+	User       string
 	Host       string
 	Port       string
 	Path       string

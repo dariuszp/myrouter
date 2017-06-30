@@ -181,9 +181,9 @@ func TestUnsecureRouterURL(t *testing.T) {
 	var router = createRouter()
 
 	//router.AddRoute("profile", []string{"GET"}, "/user/{slug}", map[string]string{"slug": "[a-z\\-]+"})
-	var path, err = router.UnsecureURL("profile", "test", "test2", map[string]string{"slug": "poltorak-dariusz"})
+	var path, err = router.UnsecureURL("profile", "test:test3", map[string]string{"slug": "poltorak-dariusz"})
 
-	if path != "http://test:test2@example.com/user/poltorak-dariusz" {
+	if path != "http://test:test3@example.com/user/poltorak-dariusz" {
 		t.Fail()
 	}
 
@@ -196,7 +196,7 @@ func TestUnsecureRouterURLWithFragment(t *testing.T) {
 	var router = createRouter()
 
 	//router.AddRoute("profile", []string{"GET"}, "/user/{slug}", map[string]string{"slug": "[a-z\\-]+"})
-	var path, err = router.UnsecureURLWithFragment("profile", "test", "test2", map[string]string{"slug": "poltorak-dariusz"}, "test")
+	var path, err = router.UnsecureURLWithFragment("profile", "test:test2", map[string]string{"slug": "poltorak-dariusz"}, "test")
 
 	if path != "http://test:test2@example.com/user/poltorak-dariusz#test" {
 		t.Fail()

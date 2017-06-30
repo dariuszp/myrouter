@@ -59,13 +59,13 @@ Adding router will result in bool value (check if route was added) and potential
 
 ### Adding custom route
 
-> func (router *MyRouter) AddCustom(name string, methods []string, scheme string, unsecureLogin string, unsecurePassword string, host string, port int, path string, requirements map[string]string) (bool, error)
+> func (router *MyRouter) AddCustom(name string, methods []string, scheme string, unsecureUser string, host string, port int, path string, requirements map[string]string) (bool, error)
 
 There is also an edge case when we want router with different host, port etc. In that case we need to add custom route:
 
 ```go
 var router = NewMyRouter("http", "madmanlabs.com", 0)
-var status, err = router.AddCustom("user_profile", make([]string), "https", "mylogin", "mypassword", "secure.example.com", 440, "/user/{id}", map[string]string{ "id": "[1-9]+[0-9]*" })
+var status, err = router.AddCustom("user_profile", make([]string), "https", "mylogin:mypassword", "secure.example.com", 440, "/user/{id}", map[string]string{ "id": "[1-9]+[0-9]*" })
 ```
 
 ### Setting route method 

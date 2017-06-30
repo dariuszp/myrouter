@@ -141,14 +141,13 @@ func TestURLWithNoParams(t *testing.T) {
 	}
 }
 
-func TestURLWithLoginAndPassword(t *testing.T) {
+func TestURLWithUser(t *testing.T) {
 	var route *Route
 	var err error
 	var url string
 	var methods = []string{"get", "post"}
 	route, err = NewRoute("test", methods, "https", "example.com", 0, "/api/user", map[string]string{"id": "[1-9]+[0-9]*"})
-	route.unsecureLogin = "darek"
-	route.unsecurePassword = "poltorak"
+	route.unsecureUser = "darek:poltorak"
 
 	if err != nil {
 		fmt.Println(err)
