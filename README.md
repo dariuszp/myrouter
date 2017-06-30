@@ -23,19 +23,92 @@ This part will explain how to use "My Router"
 
 ### Creating router
 
+> func NewMyRouter(scheme string, host string, port int) *MyRouter
+
 To create router that will handle "http://madmanlabs.com" on default port, just call NewMyRouter with parameters
 
 ```go
-// func NewMyRouter(scheme string, host string, port int) *MyRouter
 var router = NewMyRouter("http", "madmanlabs.com", 0)
 ```
 
 In case you want port in Your URL, just set value above 0
 
 ```go
-// func NewMyRouter(scheme string, host string, port int) *MyRouter
 var router = NewMyRouter("http", "madmanlabs.com", 443)
 ```
+
+### Adding new route
+
+> func (router *MyRouter) Add(name string, methods []string, path string, requirements map[string]string) (bool, error)
+
+Too add new route, without requirements:
+
+```go
+var router = NewMyRouter("http", "madmanlabs.com", 0)
+router.Add("user_profile", make([]string), "/user/{id}", make(map[string]string))
+```
+
+but often we have specific ID format, for example only numbers and we want to force this format on router:
+
+```go
+var router = NewMyRouter("http", "madmanlabs.com", 0)
+var status, err = router.Add("user_profile", make([]string), "/user/{id}", map[string]string{ "id": "[1-9]+[0-9]*" })
+```
+
+Adding router will result in bool value (check if route was added) and potential error.
+
+### Adding custom route
+
+> func (router *MyRouter) AddCustom(name string, methods []string, scheme string, unsecureLogin string, unsecurePassword string, host string, port int, path string, requirements map[string]string) (bool, error)
+
+There is also an edge case when we want router with different host, port etc. In that case we need to add custom route:
+
+```go
+var router = NewMyRouter("http", "madmanlabs.com", 0)
+var status, err = router.AddCustom("user_profile", make([]string), "https", "mylogin", "mypassword", "secure.example.com", 440, "/user/{id}", map[string]string{ "id": "[1-9]+[0-9]*" })
+```
+
+### Setting route method 
+
+If we want route to work only with specific methods, we can set them while creating the route
+
+```go
+var router = NewMyRouter("http", "madmanlabs.com", 0)
+var status, err = router.Add("user_profile", []string{"get", "post"}, "/user/{id}", map[string]string{ "id": "[1-9]+[0-9]*" })
+```
+
+### Removing route
+
+> func (router *MyRouter) Remove(name string) bool
+
+Removing route is simple. Since all routes need to have internal name, you can just simply call
+
+```go
+var router = NewMyRouter("http", "madmanlabs.com", 0)
+// Adding route
+var status, err = router.Add("user_profile", []string{"get", "post"}, "/user/{id}", map[string]string{ "id": "[1-9]+[0-9]*" })
+// Removing aded route
+router.Remove("user_profile")
+```
+
+### Getting the route
+
+We can also retrive added routes
+
+```go
+var router = NewMyRouter("http", "madmanlabs.com", 0)
+// Adding route
+var status, err = router.Add("user_profile", []string{"get", "post"}, "/user/{id}", map[string]string{ "id": "[1-9]+[0-9]*" })
+// Get aded route
+var route = router.Get("user_profile")
+```
+
+### Matching HTTP path against router
+
+Ok, we have our router, we added bunch of routes, how do we know what route was used by the user?
+
+
+
 
 License: **MIT**
 

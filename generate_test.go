@@ -292,3 +292,15 @@ func TestPathWithTwoParametersWithTwoValidRequirement(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestPathWithTwoParametersWithTwoValidRequirementAndExtra(t *testing.T) {
+	var requirements = map[string]*regexp.Regexp{"id": regexp.MustCompile("[0-9]+"), "slug": regexp.MustCompile("[a-z\\-]+")}
+	var path, err = generatePath("/{id}/{slug}", map[string]string{"id": "5", "slug": "poltorak-dariusz", "test": "4"}, requirements)
+	if err != nil {
+		t.Fail()
+	}
+
+	if path != "/5/poltorak-dariusz?test=4" {
+		t.Fail()
+	}
+}

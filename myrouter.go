@@ -124,6 +124,15 @@ func (router *MyRouter) Remove(name string) bool {
 	return true
 }
 
+// Get return route by its name
+func (router *MyRouter) Get(name string) *Route {
+	var route, ok = router.routes[name]
+	if !ok {
+		return nil
+	}
+	return route
+}
+
 // MatchPath find route that match specified path
 func (router *MyRouter) MatchPath(path string) (*Route, map[string]string, error) {
 	return match(router, router.routes, path)
@@ -145,15 +154,6 @@ func (router *MyRouter) MatchPathByMethod(method string, path string) (*Route, m
 	}
 
 	return match(router, list, path)
-}
-
-// Get return route by its name
-func (router *MyRouter) Get(name string) *Route {
-	var route, ok = router.routes[name]
-	if !ok {
-		return nil
-	}
-	return route
 }
 
 // Path will get route by name and generate path for it
