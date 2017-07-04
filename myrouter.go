@@ -29,21 +29,21 @@ var SupportedMethods = []string{MethodOptions, MethodGet, MethodHead, MethodPost
 
 //NewMyRouter create instance of MyRouter
 func NewMyRouter(scheme string, host string, port int) *MyRouter {
-	var verbs = make(map[string]map[string]*Route)
+	var verbs = make(Verbs)
 	for _, verb := range SupportedMethods {
-		verbs[verb] = make(map[string]*Route)
+		verbs[verb] = make(Routes)
 	}
-	var router = &MyRouter{scheme, "", host, port, verbs, make(map[string]*Route)}
+	var router = &MyRouter{scheme, "", host, port, verbs, make(Routes)}
 	return router
 }
 
 //NewUnsecureMyRouter create instance of MyRouter
 func NewUnsecureMyRouter(scheme string, user string, host string, port int) *MyRouter {
-	var verbs = make(map[string]map[string]*Route)
+	var verbs = make(Verbs)
 	for _, verb := range SupportedMethods {
-		verbs[verb] = make(map[string]*Route)
+		verbs[verb] = make(Routes)
 	}
-	var router = &MyRouter{scheme, user, host, port, verbs, make(map[string]*Route)}
+	var router = &MyRouter{scheme, user, host, port, verbs, make(Routes)}
 	return router
 }
 
@@ -53,8 +53,8 @@ type MyRouter struct {
 	defaultUnsecureUser string
 	defaultHost         string
 	defaultPort         int
-	verbs               map[string]map[string]*Route
-	routes              map[string]*Route
+	verbs               Verbs
+	routes              Routes
 }
 
 // Add register method for verbs
@@ -62,7 +62,7 @@ type MyRouter struct {
 // methods - list of methods that works with this route
 // path - path after the host and port
 // requirements - map of regexp patterns (as strings) for route params
-func (router *MyRouter) Add(name string, methods []string, path string, requirements map[string]string) (bool, error) {
+func (router *MyRouter) Add(name string, methods []string, path string, requirements Requirements) (bool, error) {
 	return router.AddCustom(name, methods, router.defaultSchema, router.defaultUnsecureUser, router.defaultHost, router.defaultPort, path, requirements)
 }
 
@@ -74,7 +74,7 @@ func (router *MyRouter) Add(name string, methods []string, path string, requirem
 // port - leave empty if You don't want to change port
 // path - path after the host and port
 // requirements - map of regexp patterns (as strings) for route params
-func (router *MyRouter) AddCustom(name string, methods []string, scheme string, unsecureUser string, host string, port int, path string, requirements map[string]string) (bool, error) {
+func (router *MyRouter) AddCustom(name string, methods []string, scheme string, unsecureUser string, host string, port int, path string, requirements Requirements) (bool, error) {
 	var err error
 	var route *Route
 	var _, ok = router.routes[name]
@@ -132,30 +132,30 @@ func (router *MyRouter) Get(name string) *Route {
 }
 
 // MatchPath find route that match specified path
-func (router *MyRouter) MatchPath(path string) (*Route, map[string]string, error) {
+func (router *MyRouter) MatchPath(path string) (*Route, PathParameters, error) {
 	return match(router, router.routes, path)
 }
 
 // MatchURL find route that match specified path
-func (router *MyRouter) MatchURL(url string) (*Route, map[string]string, error) {
+func (router *MyRouter) MatchURL(url string) (*Route, PathParameters, error) {
 	return matchURL(router, router.routes, url)
 }
 
 // MatchPathByMethod find route that match specified path filtered by method
 // Returns route, parameters and error, route will be nil if there is no match
-func (router *MyRouter) MatchPathByMethod(method string, path string) (*Route, map[string]string, error) {
+func (router *MyRouter) MatchPathByMethod(method string, path string) (*Route, PathParameters, error) {
 	method = strings.ToLower(method)
 	var list, ok = router.verbs[method]
 	if !ok {
 		var err = errors.New(strings.Join([]string{"Method not found", method}, " "))
-		return nil, map[string]string{}, err
+		return nil, PathParameters{}, err
 	}
 
 	return match(router, list, path)
 }
 
 // Path will get route by name and generate path for it
-func (router *MyRouter) Path(name string, parameters map[string][]string) (string, error) {
+func (router *MyRouter) Path(name string, parameters URLParameters) (string, error) {
 	var route = router.Get(name)
 	if route == nil {
 		return "", errors.New(strings.Join([]string{"Invalid route name:", name}, " "))
@@ -164,7 +164,7 @@ func (router *MyRouter) Path(name string, parameters map[string][]string) (strin
 }
 
 // PathWithFragment will get route by name and generate path for it with anchor
-func (router *MyRouter) PathWithFragment(name string, parameters map[string][]string, fragment string) (string, error) {
+func (router *MyRouter) PathWithFragment(name string, parameters URLParameters, fragment string) (string, error) {
 	var route = router.Get(name)
 	if route == nil {
 		return "", errors.New(strings.Join([]string{"Invalid route name:", name}, " "))
@@ -173,7 +173,7 @@ func (router *MyRouter) PathWithFragment(name string, parameters map[string][]st
 }
 
 // URL will get route by name and generate url for it
-func (router *MyRouter) URL(name string, parameters map[string][]string) (string, error) {
+func (router *MyRouter) URL(name string, parameters URLParameters) (string, error) {
 	var route = router.Get(name)
 	if route == nil {
 		return "", errors.New(strings.Join([]string{"Invalid route name:", name}, " "))
@@ -182,7 +182,7 @@ func (router *MyRouter) URL(name string, parameters map[string][]string) (string
 }
 
 // URLWithFragment will get route by name and generate url for it
-func (router *MyRouter) URLWithFragment(name string, parameters map[string][]string, fragment string) (string, error) {
+func (router *MyRouter) URLWithFragment(name string, parameters URLParameters, fragment string) (string, error) {
 	var route = router.Get(name)
 	if route == nil {
 		return "", errors.New(strings.Join([]string{"Invalid route name:", name}, " "))
@@ -191,7 +191,7 @@ func (router *MyRouter) URLWithFragment(name string, parameters map[string][]str
 }
 
 // UnsecureURL will get route by name and generate url for it
-func (router *MyRouter) UnsecureURL(name string, user string, parameters map[string][]string) (string, error) {
+func (router *MyRouter) UnsecureURL(name string, user string, parameters URLParameters) (string, error) {
 	var route = router.Get(name)
 	if route == nil {
 		return "", errors.New(strings.Join([]string{"Invalid route name:", name}, " "))
@@ -200,7 +200,7 @@ func (router *MyRouter) UnsecureURL(name string, user string, parameters map[str
 }
 
 // UnsecureURLWithFragment will get route by name and generate url for it
-func (router *MyRouter) UnsecureURLWithFragment(name string, user string, parameters map[string][]string, fragment string) (string, error) {
+func (router *MyRouter) UnsecureURLWithFragment(name string, user string, parameters URLParameters, fragment string) (string, error) {
 	var route = router.Get(name)
 	if route == nil {
 		return "", errors.New(strings.Join([]string{"Invalid route name:", name}, " "))
@@ -208,22 +208,22 @@ func (router *MyRouter) UnsecureURLWithFragment(name string, user string, parame
 	return route.UnsecureURLWithFragment(user, parameters, fragment)
 }
 
-func match(router *MyRouter, list map[string]*Route, path string) (*Route, map[string]string, error) {
+func match(router *MyRouter, list Routes, path string) (*Route, PathParameters, error) {
 	for _, route := range list {
 		if route.Match(path) {
 			var _, parameters, err = route.ParsePath(path)
 			return route, parameters, err
 		}
 	}
-	return nil, map[string]string{}, errors.New("No route match")
+	return nil, PathParameters{}, errors.New("No route match")
 }
 
-func matchURL(router *MyRouter, list map[string]*Route, url string) (*Route, map[string]string, error) {
+func matchURL(router *MyRouter, list Routes, url string) (*Route, PathParameters, error) {
 	for _, route := range list {
 		if route.MatchURL(url) {
 			var _, parameters, err = route.ParseURL(url)
 			return route, parameters, err
 		}
 	}
-	return nil, map[string]string{}, errors.New("No route match")
+	return nil, PathParameters{}, errors.New("No route match")
 }
