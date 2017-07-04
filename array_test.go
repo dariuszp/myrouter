@@ -47,3 +47,16 @@ func TestStringCompareNoCaseEqualArray(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestIsArray(t *testing.T) {
+	var a = []string{"darek"}
+	var b = "darek"
+
+	if !isArray(a) {
+		t.Fail()
+	}
+
+	if isArray(b) {
+		t.Fail()
+	}
+}

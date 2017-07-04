@@ -1,6 +1,7 @@
 package myrouter
 
 import (
+	"reflect"
 	"strings"
 )
 
@@ -43,4 +44,9 @@ func arrayCompareStringNoCase(listA []string, listB []string) bool {
 		}
 	}
 	return true
+}
+
+func isArray(v interface{}) bool {
+	rv := reflect.ValueOf(v)
+	return rv.Kind() == reflect.Array || rv.Kind() == reflect.Slice
 }
