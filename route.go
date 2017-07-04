@@ -143,12 +143,12 @@ func (route *Route) ParseURL(urlAddress string) (bool, map[string]string, error)
 }
 
 // Path generate path from route
-func (route *Route) Path(parameters map[string]string) (string, error) {
+func (route *Route) Path(parameters map[string][]string) (string, error) {
 	return generatePath(route.path, parameters, route.requirements)
 }
 
 // PathWithFragment generate path from route and add anchor at the end
-func (route *Route) PathWithFragment(parameters map[string]string, fragment string) (string, error) {
+func (route *Route) PathWithFragment(parameters map[string][]string, fragment string) (string, error) {
 	var path, err = generatePath(route.path, parameters, route.requirements)
 	if err != nil {
 		return "", err
@@ -157,12 +157,12 @@ func (route *Route) PathWithFragment(parameters map[string]string, fragment stri
 }
 
 // URL generate path from route
-func (route *Route) URL(parameters map[string]string) (string, error) {
+func (route *Route) URL(parameters map[string][]string) (string, error) {
 	return generateURL(route.scheme, route.unsecureUser, route.host, route.port, route.path, parameters, route.requirements)
 }
 
 // URLWithFragment generate path from route and add anchor at the end
-func (route *Route) URLWithFragment(parameters map[string]string, fragment string) (string, error) {
+func (route *Route) URLWithFragment(parameters map[string][]string, fragment string) (string, error) {
 	var url, err = generateURL(route.scheme, route.unsecureUser, route.host, route.port, route.path, parameters, route.requirements)
 	if err != nil {
 		return "", err
@@ -171,12 +171,12 @@ func (route *Route) URLWithFragment(parameters map[string]string, fragment strin
 }
 
 // UnsecureURL generate path from route with user
-func (route *Route) UnsecureURL(user string, parameters map[string]string) (string, error) {
+func (route *Route) UnsecureURL(user string, parameters map[string][]string) (string, error) {
 	return generateURL(route.scheme, user, route.host, route.port, route.path, parameters, route.requirements)
 }
 
 // UnsecureURLWithFragment generate path from route and add anchor at the end with user
-func (route *Route) UnsecureURLWithFragment(user string, parameters map[string]string, fragment string) (string, error) {
+func (route *Route) UnsecureURLWithFragment(user string, parameters map[string][]string, fragment string) (string, error) {
 	var url, err = generateURL(route.scheme, user, route.host, route.port, route.path, parameters, route.requirements)
 	if err != nil {
 		return "", err

@@ -106,7 +106,7 @@ func TestURL(t *testing.T) {
 		t.Fail()
 	}
 
-	url, err = route.URL(map[string]string{"id": "5"})
+	url, err = route.URL(map[string][]string{"id": []string{"5"}})
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -129,7 +129,7 @@ func TestURLWithNoParams(t *testing.T) {
 		t.Fail()
 	}
 
-	url, err = route.URL(map[string]string{"id": "5"})
+	url, err = route.URL(map[string][]string{"id": []string{"5"}})
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -154,7 +154,7 @@ func TestURLWithUser(t *testing.T) {
 		t.Fail()
 	}
 
-	url, err = route.URL(map[string]string{"id": "5"})
+	url, err = route.URL(map[string][]string{"id": []string{"5"}})
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()

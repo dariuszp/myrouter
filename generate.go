@@ -40,14 +40,23 @@ func generateRegexpFromPath(path string, requirements map[string]*regexp.Regexp)
 }
 
 // Path fill url pattern with parameters
-func generatePath(path string, parameters map[string]string, requirements map[string]*regexp.Regexp) (string, error) {
+func generatePath(path string, parameters map[string][]string, requirements map[string]*regexp.Regexp) (string, error) {
 	var extracted = extractParamNames(path)
 	for _, parameterName := range extracted {
-		var value, ok = parameters[parameterName]
+		var values []string
+		var value string
+		var ok bool
 
+		values, ok = parameters[parameterName]
 		if !ok {
 			return "", errors.New(strings.Join([]string{"Invalid path parameter", parameterName}, " "))
 		}
+
+		if len(values) != 1 {
+			return "", errors.New(strings.Join([]string{"Parameters in path must contain only 1 element:", parameterName}, " "))
+		}
+
+		value = values[0]
 
 		delete(parameters, parameterName)
 
@@ -76,19 +85,31 @@ func generatePath(path string, parameters map[string]string, requirements map[st
 }
 
 // URL combine host, port and path to create absolute url
-func generateURL(scheme string, user string, host string, port int, path string, parameters map[string]string, requirements map[string]*regexp.Regexp) (string, error) {
-	var hostname string
-
-	var basicAuth = ""
-	if len(user) > 0 {
-		basicAuth = strings.Join([]string{user, "@"}, "")
-	}
-
+func generateURL(scheme string, user string, host string, port int, path string, parameters map[string][]string, requirements map[string]*regexp.Regexp) (string, error) {
 	if port > 0 {
-		hostname = strings.Join([]string{scheme, "://", basicAuth, host, ":", strconv.Itoa(port)}, "")
-	} else {
-		hostname = strings.Join([]string{scheme, "://", basicAuth, host}, "")
+		host = strings.Join([]string{host, strconv.Itoa(port)}, ":")
 	}
+
+	var urlUser *url.Userinfo
+	if len(user) > 0 {
+		var userData = strings.Split(user, ":")
+		if len(userData) == 2 {
+			urlUser = url.UserPassword(userData[0], userData[1])
+		} else {
+			urlUser = url.User(user)
+		}
+
+	}
+
+	var url = &url.URL{
+		Scheme: scheme,
+		User:   urlUser,
+		Host:   host,
+		Path:   "",
+	}
+
+	var hostname = url.String()
+
 	var generatedPath, err = generatePath(path, parameters, requirements)
 	if err != nil {
 		return "", err
@@ -97,15 +118,7 @@ func generateURL(scheme string, user string, host string, port int, path string,
 	return strings.Join([]string{hostname, generatedPath}, ""), nil
 }
 
-func generateQueryString(parameters map[string]string) string {
-	var queryStringParameters []string
-	var queryParam string
-	for name, value := range parameters {
-		name = url.QueryEscape(name)
-		value = url.QueryEscape(value)
-		queryParam = strings.Join([]string{name, value}, "=")
-		queryStringParameters = append(queryStringParameters, queryParam)
-	}
-
-	return strings.Join(queryStringParameters, "&")
+func generateQueryString(parameters map[string][]string) string {
+	var values = url.Values(parameters)
+	return values.Encode()
 }

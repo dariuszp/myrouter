@@ -50,7 +50,7 @@ func testRegExpFromPathValueVerification(t *testing.T, path string, url string, 
 }
 
 func TestEmptyPath(t *testing.T) {
-	var path, err = generatePath("", make(map[string]string), make(map[string]*regexp.Regexp))
+	var path, err = generatePath("", make(map[string][]string), make(map[string]*regexp.Regexp))
 	if err != nil {
 		t.Fail()
 	}
@@ -60,7 +60,7 @@ func TestEmptyPath(t *testing.T) {
 }
 
 func TestPathWithMissingParameter(t *testing.T) {
-	var path, err = generatePath("/{id}", make(map[string]string), make(map[string]*regexp.Regexp))
+	var path, err = generatePath("/{id}", make(map[string][]string), make(map[string]*regexp.Regexp))
 	if err == nil {
 		t.Fail()
 	}
@@ -71,7 +71,7 @@ func TestPathWithMissingParameter(t *testing.T) {
 }
 
 func TestPathWithParameter(t *testing.T) {
-	var path, err = generatePath("/{id}", map[string]string{"id": "test"}, make(map[string]*regexp.Regexp))
+	var path, err = generatePath("/{id}", map[string][]string{"id": []string{"test"}}, make(map[string]*regexp.Regexp))
 	if err != nil {
 		t.Fail()
 	}
@@ -82,7 +82,7 @@ func TestPathWithParameter(t *testing.T) {
 }
 
 func TestPathWithExtraParameter(t *testing.T) {
-	var path, err = generatePath("/{id}", map[string]string{"id": "test", "slug": "poltorak-dariusz"}, make(map[string]*regexp.Regexp))
+	var path, err = generatePath("/{id}", map[string][]string{"id": []string{"test"}, "slug": []string{"poltorak-dariusz"}}, make(map[string]*regexp.Regexp))
 	if err != nil {
 		t.Fail()
 	}
@@ -93,7 +93,7 @@ func TestPathWithExtraParameter(t *testing.T) {
 }
 
 func TestPathWithTwoParameters(t *testing.T) {
-	var path, err = generatePath("/{id}/{slug}", map[string]string{"id": "test", "slug": "poltorak-dariusz"}, make(map[string]*regexp.Regexp))
+	var path, err = generatePath("/{id}/{slug}", map[string][]string{"id": []string{"test"}, "slug": []string{"poltorak-dariusz"}}, make(map[string]*regexp.Regexp))
 	if err != nil {
 		t.Fail()
 	}
@@ -183,7 +183,7 @@ func TestUrl(t *testing.T) {
 	var host = "example.com"
 	var port int
 	var path = "/api/user/{id}"
-	var parameters = map[string]string{"id": "5"}
+	var parameters = map[string][]string{"id": []string{"5"}}
 
 	var url, err = generateURL(scheme, "", host, port, path, parameters, make(map[string]*regexp.Regexp))
 	if err != nil {
@@ -200,7 +200,7 @@ func TestUrlTwoParameters(t *testing.T) {
 	var host = "example.com"
 	var port int
 	var path = "/api/user/{id}/{slug}"
-	var parameters = map[string]string{"slug": "dariusz-poltorak", "id": "5"}
+	var parameters = map[string][]string{"slug": []string{"dariusz-poltorak"}, "id": []string{"5"}}
 
 	var url, err = generateURL(scheme, "", host, port, path, parameters, make(map[string]*regexp.Regexp))
 	if err != nil {
@@ -217,7 +217,7 @@ func TestUrlMissingParameters(t *testing.T) {
 	var host = "example.com"
 	var port int
 	var path = "/api/user/{id}/{slug}"
-	var parameters = map[string]string{"id": "5"}
+	var parameters = map[string][]string{"id": []string{"5"}}
 
 	var url, err = generateURL(scheme, "", host, port, path, parameters, make(map[string]*regexp.Regexp))
 	if err == nil {
@@ -234,7 +234,7 @@ func TestUrlTwoParametersWithPort(t *testing.T) {
 	var host = "example.com"
 	var port = 80
 	var path = "/api/user/{id}/{slug}"
-	var parameters = map[string]string{"slug": "dariusz-poltorak", "id": "5"}
+	var parameters = map[string][]string{"slug": []string{"dariusz-poltorak"}, "id": []string{"5"}}
 
 	var url, err = generateURL(scheme, "", host, port, path, parameters, make(map[string]*regexp.Regexp))
 	if err != nil {
@@ -247,7 +247,7 @@ func TestUrlTwoParametersWithPort(t *testing.T) {
 
 func TestPathWithTwoParametersWithInvalidRequirement(t *testing.T) {
 	var requirements = map[string]*regexp.Regexp{"id": regexp.MustCompile("[0-9]+")}
-	var path, err = generatePath("/{id}/{slug}", map[string]string{"id": "test", "slug": "poltorak-dariusz"}, requirements)
+	var path, err = generatePath("/{id}/{slug}", map[string][]string{"id": []string{"test"}, "slug": []string{"poltorak-dariusz"}}, requirements)
 	if err == nil {
 		t.Fail()
 	}
@@ -259,7 +259,7 @@ func TestPathWithTwoParametersWithInvalidRequirement(t *testing.T) {
 
 func TestPathWithTwoParametersWithTwoInvalidRequirements(t *testing.T) {
 	var requirements = map[string]*regexp.Regexp{"id": regexp.MustCompile("[0-9]+"), "slug": regexp.MustCompile("[A-Z]+")}
-	var path, err = generatePath("/{id}/{slug}", map[string]string{"id": "test", "slug": "poltorak-dariusz"}, requirements)
+	var path, err = generatePath("/{id}/{slug}", map[string][]string{"id": []string{"test"}, "slug": []string{"poltorak-dariusz"}}, requirements)
 	if err == nil {
 		t.Fail()
 	}
@@ -271,7 +271,7 @@ func TestPathWithTwoParametersWithTwoInvalidRequirements(t *testing.T) {
 
 func TestPathWithTwoParametersWithValidRequirement(t *testing.T) {
 	var requirements = map[string]*regexp.Regexp{"id": regexp.MustCompile("[0-9]+")}
-	var path, err = generatePath("/{id}/{slug}", map[string]string{"id": "5", "slug": "poltorak-dariusz"}, requirements)
+	var path, err = generatePath("/{id}/{slug}", map[string][]string{"id": []string{"5"}, "slug": []string{"poltorak-dariusz"}}, requirements)
 	if err != nil {
 		t.Fail()
 	}
@@ -283,7 +283,7 @@ func TestPathWithTwoParametersWithValidRequirement(t *testing.T) {
 
 func TestPathWithTwoParametersWithTwoValidRequirement(t *testing.T) {
 	var requirements = map[string]*regexp.Regexp{"id": regexp.MustCompile("[0-9]+"), "slug": regexp.MustCompile("[a-z\\-]+")}
-	var path, err = generatePath("/{id}/{slug}", map[string]string{"id": "5", "slug": "poltorak-dariusz"}, requirements)
+	var path, err = generatePath("/{id}/{slug}", map[string][]string{"id": []string{"5"}, "slug": []string{"poltorak-dariusz"}}, requirements)
 	if err != nil {
 		t.Fail()
 	}
@@ -295,7 +295,7 @@ func TestPathWithTwoParametersWithTwoValidRequirement(t *testing.T) {
 
 func TestPathWithTwoParametersWithTwoValidRequirementAndExtra(t *testing.T) {
 	var requirements = map[string]*regexp.Regexp{"id": regexp.MustCompile("[0-9]+"), "slug": regexp.MustCompile("[a-z\\-]+")}
-	var path, err = generatePath("/{id}/{slug}", map[string]string{"id": "5", "slug": "poltorak-dariusz", "test": "4"}, requirements)
+	var path, err = generatePath("/{id}/{slug}", map[string][]string{"id": []string{"5"}, "slug": []string{"poltorak-dariusz"}, "test": []string{"4"}}, requirements)
 	if err != nil {
 		t.Fail()
 	}

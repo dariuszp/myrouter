@@ -90,7 +90,7 @@ func TestPath(t *testing.T) {
 	var router = createRouter()
 
 	//router.AddRoute("profile", []string{"GET"}, "/user/{slug}", map[string]string{"slug": "[a-z\\-]+"})
-	var path, err = router.Path("profile", map[string]string{"slug": "poltorak-dariusz"})
+	var path, err = router.Path("profile", map[string][]string{"slug": []string{"poltorak-dariusz"}})
 
 	if path != "/user/poltorak-dariusz" {
 		t.Fail()
@@ -105,7 +105,7 @@ func TestPathWithExtraParam(t *testing.T) {
 	var router = createRouter()
 
 	//router.AddRoute("profile", []string{"GET"}, "/user/{slug}", map[string]string{"slug": "[a-z\\-]+"})
-	var path, err = router.Path("profile", map[string]string{"slug": "poltorak-dariusz", "id": "5"})
+	var path, err = router.Path("profile", map[string][]string{"slug": []string{"poltorak-dariusz"}, "id": []string{"5"}})
 
 	if path != "/user/poltorak-dariusz?id=5" {
 		t.Fail()
@@ -120,7 +120,7 @@ func TestPathWithExtraParamAndFragment(t *testing.T) {
 	var router = createRouter()
 
 	//router.AddRoute("profile", []string{"GET"}, "/user/{slug}", map[string]string{"slug": "[a-z\\-]+"})
-	var path, err = router.PathWithFragment("profile", map[string]string{"slug": "poltorak-dariusz", "id": "5"}, "test")
+	var path, err = router.PathWithFragment("profile", map[string][]string{"slug": []string{"poltorak-dariusz"}, "id": []string{"5"}}, "test")
 
 	if path != "/user/poltorak-dariusz?id=5#test" {
 		fmt.Println(path)
@@ -136,7 +136,7 @@ func TestPathWithMissingParams(t *testing.T) {
 	var router = createRouter()
 
 	//router.AddRoute("profile", []string{"GET"}, "/user/{slug}", map[string]string{"slug": "[a-z\\-]+"})
-	var path, err = router.Path("profile", make(map[string]string))
+	var path, err = router.Path("profile", make(map[string][]string))
 
 	if path != "" {
 		t.Fail()
@@ -151,7 +151,7 @@ func TestRouterURL(t *testing.T) {
 	var router = createRouter()
 
 	//router.AddRoute("profile", []string{"GET"}, "/user/{slug}", map[string]string{"slug": "[a-z\\-]+"})
-	var path, err = router.URL("profile", map[string]string{"slug": "poltorak-dariusz"})
+	var path, err = router.URL("profile", map[string][]string{"slug": []string{"poltorak-dariusz"}})
 
 	if path != "http://example.com/user/poltorak-dariusz" {
 		t.Fail()
@@ -166,7 +166,7 @@ func TestRouterURLWithFragment(t *testing.T) {
 	var router = createRouter()
 
 	//router.AddRoute("profile", []string{"GET"}, "/user/{slug}", map[string]string{"slug": "[a-z\\-]+"})
-	var path, err = router.URLWithFragment("profile", map[string]string{"slug": "poltorak-dariusz"}, "test")
+	var path, err = router.URLWithFragment("profile", map[string][]string{"slug": []string{"poltorak-dariusz"}}, "test")
 
 	if path != "http://example.com/user/poltorak-dariusz#test" {
 		t.Fail()
@@ -181,7 +181,7 @@ func TestUnsecureRouterURL(t *testing.T) {
 	var router = createRouter()
 
 	//router.AddRoute("profile", []string{"GET"}, "/user/{slug}", map[string]string{"slug": "[a-z\\-]+"})
-	var path, err = router.UnsecureURL("profile", "test:test3", map[string]string{"slug": "poltorak-dariusz"})
+	var path, err = router.UnsecureURL("profile", "test:test3", map[string][]string{"slug": []string{"poltorak-dariusz"}})
 
 	if path != "http://test:test3@example.com/user/poltorak-dariusz" {
 		t.Fail()
@@ -196,7 +196,7 @@ func TestUnsecureRouterURLWithFragment(t *testing.T) {
 	var router = createRouter()
 
 	//router.AddRoute("profile", []string{"GET"}, "/user/{slug}", map[string]string{"slug": "[a-z\\-]+"})
-	var path, err = router.UnsecureURLWithFragment("profile", "test:test2", map[string]string{"slug": "poltorak-dariusz"}, "test")
+	var path, err = router.UnsecureURLWithFragment("profile", "test:test2", map[string][]string{"slug": []string{"poltorak-dariusz"}}, "test")
 
 	if path != "http://test:test2@example.com/user/poltorak-dariusz#test" {
 		t.Fail()
