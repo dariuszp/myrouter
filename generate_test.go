@@ -304,3 +304,18 @@ func TestPathWithTwoParametersWithTwoValidRequirementAndExtra(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestArrayParameters(t *testing.T) {
+	var parameters = map[string][]string{"ids": []string{"1", "2"}}
+	var path, err = generatePath("/test", parameters, make(map[string]*regexp.Regexp))
+	if err != nil {
+		t.Fail()
+	}
+
+	var expected = "/test?ids=1&ids=2"
+	if path != expected {
+		fmt.Println(strings.Join([]string{"Expected", expected}, " "))
+		fmt.Println(strings.Join([]string{"Actual", path}, " "))
+		t.Fail()
+	}
+}
