@@ -319,3 +319,18 @@ func TestArrayParameters(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestGeneratePathWithEscape(t *testing.T) {
+	var parameters = map[string][]string{"username": []string{"dariusz poltorak"}, "names": []string{"no name", "dariuszp/myrouter"}}
+	var path, err = generatePath("/test/{username}", parameters, make(map[string]*regexp.Regexp))
+	var expect = "/test/dariusz%20poltorak?names=no+name&names=dariuszp%2Fmyrouter"
+	if err != nil {
+		t.Fail()
+	}
+
+	if path != expect {
+		fmt.Println(strings.Join([]string{"Expected", expect}, " "))
+		fmt.Println(strings.Join([]string{"Actual", path}, " "))
+		t.Fail()
+	}
+}

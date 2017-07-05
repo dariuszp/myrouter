@@ -70,7 +70,7 @@ func generatePath(path string, parameters URLParameters, requirements CompiledRe
 
 		parameterName = strings.Join([]string{"{", parameterName, "}"}, "")
 
-		value = url.QueryEscape(value)
+		value = url.PathEscape(value)
 		path = strings.Replace(path, parameterName, value, -1)
 	}
 

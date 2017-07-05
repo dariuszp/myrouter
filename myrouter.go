@@ -38,6 +38,7 @@ func NewMyRouter(scheme string, host string, port int) *MyRouter {
 }
 
 //NewUnsecureMyRouter create instance of MyRouter
+// You can provide user in format "username:password"
 func NewUnsecureMyRouter(scheme string, user string, host string, port int) *MyRouter {
 	var verbs = make(Verbs)
 	for _, verb := range SupportedMethods {
@@ -47,7 +48,7 @@ func NewUnsecureMyRouter(scheme string, user string, host string, port int) *MyR
 	return router
 }
 
-// MyRouter is just my router :-D
+// MyRouter is a router
 type MyRouter struct {
 	defaultSchema       string
 	defaultUnsecureUser string
@@ -141,6 +142,11 @@ func (router *MyRouter) MatchURL(url string) (*MyURL, error) {
 	return matchURL(router, router.routes, url)
 }
 
+// Match is an alias for MatchURL
+func (router *MyRouter) Match(url string) (*MyURL, error) {
+	return router.MatchURL(url)
+}
+
 // MatchPathByMethod find route that match specified path filtered by method
 // Returns route, parameters and error, route will be nil if there is no match
 func (router *MyRouter) MatchPathByMethod(method string, path string) (*MyURL, error) {
@@ -152,6 +158,19 @@ func (router *MyRouter) MatchPathByMethod(method string, path string) (*MyURL, e
 	}
 
 	return match(router, list, path)
+}
+
+// MatchURLByMethod find route that match specified path filtered by method
+// Returns route, parameters and error, route will be nil if there is no match
+func (router *MyRouter) MatchURLByMethod(method string, url string) (*MyURL, error) {
+	method = strings.ToLower(method)
+	var list, ok = router.verbs[method]
+	if !ok {
+		var err = errors.New(strings.Join([]string{"Method not found", method}, " "))
+		return NewEmptyMyURL(), err
+	}
+
+	return matchURL(router, list, url)
 }
 
 // Path will get route by name and generate path for it
