@@ -12,7 +12,7 @@ var defaultReadParameterPattern = "[^/]+"
 var defaultReadParameterRegexp = regexp.MustCompile(defaultReadParameterPattern)
 
 //RegExpFromPath turns path to regexp pattern
-func generateRegexpFromPath(path string, requirements map[string]*regexp.Regexp) (*regexp.Regexp, error) {
+func generateRegexpFromPath(path string, requirements CompiledRequirements) (*regexp.Regexp, error) {
 	var parameterEscapedName, escapedPath, result, patternReplace string
 	var ok bool
 	var rx *regexp.Regexp
@@ -40,7 +40,7 @@ func generateRegexpFromPath(path string, requirements map[string]*regexp.Regexp)
 }
 
 // Path fill url pattern with parameters
-func generatePath(path string, parameters map[string][]string, requirements map[string]*regexp.Regexp) (string, error) {
+func generatePath(path string, parameters URLParameters, requirements CompiledRequirements) (string, error) {
 	var extracted = extractParamNames(path)
 	for _, parameterName := range extracted {
 		var values []string
@@ -85,7 +85,7 @@ func generatePath(path string, parameters map[string][]string, requirements map[
 }
 
 // URL combine host, port and path to create absolute url
-func generateURL(scheme string, user string, host string, port int, path string, parameters map[string][]string, requirements map[string]*regexp.Regexp) (string, error) {
+func generateURL(scheme string, user string, host string, port int, path string, parameters URLParameters, requirements CompiledRequirements) (string, error) {
 	if port > 0 {
 		host = strings.Join([]string{host, strconv.Itoa(port)}, ":")
 	}

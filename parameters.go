@@ -23,7 +23,7 @@ func extractParamNames(path string) []string {
 	return parameters
 }
 
-func extractParamsFromRoute(route *Route, path string) (map[string]string, error) {
+func extractParamsFromRoute(route *Route, path string) (PathParameters, error) {
 	var result = make(map[string]string)
 	var name, value string
 	var err error

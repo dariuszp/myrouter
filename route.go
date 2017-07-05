@@ -23,7 +23,7 @@ type Route struct {
 }
 
 // NewRoute create new route
-func NewRoute(name string, methods []string, scheme string, host string, port int, path string, requirements map[string]string) (*Route, error) {
+func NewRoute(name string, methods []string, scheme string, host string, port int, path string, requirements Requirements) (*Route, error) {
 	if len(path) == 0 {
 		return nil, errors.New("Route path cannot be empty")
 	}
@@ -122,7 +122,7 @@ func (route *Route) MatchURLMethod(method string, urlAddress string) bool {
 
 // ParsePath will parse path, check for a match and then extract route parameters
 // Returns match bool, parameetsrs and error in case parameters parse does not work
-func (route *Route) ParsePath(path string) (bool, map[string]string, error) {
+func (route *Route) ParsePath(path string) (bool, PathParameters, error) {
 	var match = route.Match(path)
 	var parameters, err = extractParamsFromRoute(route, path)
 	return match, parameters, err
@@ -130,7 +130,7 @@ func (route *Route) ParsePath(path string) (bool, map[string]string, error) {
 
 // ParseURL will parse path, check for a match and then extract route parameters
 // Returns match bool, parameetsrs and error in case parameters parse does not work
-func (route *Route) ParseURL(urlAddress string) (bool, map[string]string, error) {
+func (route *Route) ParseURL(urlAddress string) (bool, PathParameters, error) {
 	var parameters map[string]string
 	var parsed, err = url.Parse(urlAddress)
 	if err != nil {
@@ -143,12 +143,12 @@ func (route *Route) ParseURL(urlAddress string) (bool, map[string]string, error)
 }
 
 // Path generate path from route
-func (route *Route) Path(parameters map[string][]string) (string, error) {
+func (route *Route) Path(parameters URLParameters) (string, error) {
 	return generatePath(route.path, parameters, route.requirements)
 }
 
 // PathWithFragment generate path from route and add anchor at the end
-func (route *Route) PathWithFragment(parameters map[string][]string, fragment string) (string, error) {
+func (route *Route) PathWithFragment(parameters URLParameters, fragment string) (string, error) {
 	var path, err = generatePath(route.path, parameters, route.requirements)
 	if err != nil {
 		return "", err
@@ -157,12 +157,12 @@ func (route *Route) PathWithFragment(parameters map[string][]string, fragment st
 }
 
 // URL generate path from route
-func (route *Route) URL(parameters map[string][]string) (string, error) {
+func (route *Route) URL(parameters URLParameters) (string, error) {
 	return generateURL(route.scheme, route.unsecureUser, route.host, route.port, route.path, parameters, route.requirements)
 }
 
 // URLWithFragment generate path from route and add anchor at the end
-func (route *Route) URLWithFragment(parameters map[string][]string, fragment string) (string, error) {
+func (route *Route) URLWithFragment(parameters URLParameters, fragment string) (string, error) {
 	var url, err = generateURL(route.scheme, route.unsecureUser, route.host, route.port, route.path, parameters, route.requirements)
 	if err != nil {
 		return "", err
@@ -171,12 +171,12 @@ func (route *Route) URLWithFragment(parameters map[string][]string, fragment str
 }
 
 // UnsecureURL generate path from route with user
-func (route *Route) UnsecureURL(user string, parameters map[string][]string) (string, error) {
+func (route *Route) UnsecureURL(user string, parameters URLParameters) (string, error) {
 	return generateURL(route.scheme, user, route.host, route.port, route.path, parameters, route.requirements)
 }
 
 // UnsecureURLWithFragment generate path from route and add anchor at the end with user
-func (route *Route) UnsecureURLWithFragment(user string, parameters map[string][]string, fragment string) (string, error) {
+func (route *Route) UnsecureURLWithFragment(user string, parameters URLParameters, fragment string) (string, error) {
 	var url, err = generateURL(route.scheme, user, route.host, route.port, route.path, parameters, route.requirements)
 	if err != nil {
 		return "", err
