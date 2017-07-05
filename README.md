@@ -1,5 +1,9 @@
 # MyRouter
 
+## Requirements
+
+Go 1.8
+
 package dariuszp/myrouter
 
 My router for GO http server. I was pissed off by existing routers and way they handle paths and params.
