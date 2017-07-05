@@ -132,23 +132,23 @@ func (router *MyRouter) Get(name string) *Route {
 }
 
 // MatchPath find route that match specified path
-func (router *MyRouter) MatchPath(path string) (*Route, PathParameters, error) {
+func (router *MyRouter) MatchPath(path string) (*MyURL, error) {
 	return match(router, router.routes, path)
 }
 
 // MatchURL find route that match specified path
-func (router *MyRouter) MatchURL(url string) (*Route, PathParameters, error) {
+func (router *MyRouter) MatchURL(url string) (*MyURL, error) {
 	return matchURL(router, router.routes, url)
 }
 
 // MatchPathByMethod find route that match specified path filtered by method
 // Returns route, parameters and error, route will be nil if there is no match
-func (router *MyRouter) MatchPathByMethod(method string, path string) (*Route, PathParameters, error) {
+func (router *MyRouter) MatchPathByMethod(method string, path string) (*MyURL, error) {
 	method = strings.ToLower(method)
 	var list, ok = router.verbs[method]
 	if !ok {
 		var err = errors.New(strings.Join([]string{"Method not found", method}, " "))
-		return nil, PathParameters{}, err
+		return NewEmptyMyURL(), err
 	}
 
 	return match(router, list, path)
@@ -208,22 +208,22 @@ func (router *MyRouter) UnsecureURLWithFragment(name string, user string, parame
 	return route.UnsecureURLWithFragment(user, parameters, fragment)
 }
 
-func match(router *MyRouter, list Routes, path string) (*Route, PathParameters, error) {
+func match(router *MyRouter, list Routes, path string) (*MyURL, error) {
 	for _, route := range list {
 		if route.Match(path) {
-			var _, parameters, err = route.ParsePath(path)
-			return route, parameters, err
+			var myurl, err = route.ParsePath(path)
+			return myurl, err
 		}
 	}
-	return nil, PathParameters{}, errors.New("No route match")
+	return NewEmptyMyURL(), errors.New("No route match")
 }
 
-func matchURL(router *MyRouter, list Routes, url string) (*Route, PathParameters, error) {
+func matchURL(router *MyRouter, list Routes, url string) (*MyURL, error) {
 	for _, route := range list {
 		if route.MatchURL(url) {
-			var _, parameters, err = route.ParseURL(url)
-			return route, parameters, err
+			var myurl, err = route.ParseURL(url)
+			return myurl, err
 		}
 	}
-	return nil, PathParameters{}, errors.New("No route match")
+	return NewEmptyMyURL(), errors.New("No route match")
 }

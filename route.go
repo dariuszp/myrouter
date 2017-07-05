@@ -122,24 +122,83 @@ func (route *Route) MatchURLMethod(method string, urlAddress string) bool {
 
 // ParsePath will parse path, check for a match and then extract route parameters
 // Returns match bool, parameetsrs and error in case parameters parse does not work
-func (route *Route) ParsePath(path string) (bool, PathParameters, error) {
+func (route *Route) ParsePath(path string) (*MyURL, error) {
+	var parameters PathParameters
+
+	// Parse url
+	var parsed, err = url.Parse(path)
+	if err != nil {
+		return NewEmptyMyURL(), err
+	}
+
+	path = parsed.Path
 	var match = route.Match(path)
-	var parameters, err = extractParamsFromRoute(route, path)
-	return match, parameters, err
+	if !match {
+		return NewEmptyMyURL(), errors.New("No route match")
+	}
+
+	parameters, err = extractParamsFromRoute(route, path)
+
+	var queryParameters URLParameters
+	for key, value := range parsed.Query() {
+		queryParameters[key] = value
+	}
+
+	return NewMyURL("", "", "", "", 0, path, parameters, queryParameters, parsed.Fragment, route), nil
 }
 
 // ParseURL will parse path, check for a match and then extract route parameters
 // Returns match bool, parameetsrs and error in case parameters parse does not work
-func (route *Route) ParseURL(urlAddress string) (bool, PathParameters, error) {
-	var parameters map[string]string
+func (route *Route) ParseURL(urlAddress string) (*MyURL, error) {
+	var parameters PathParameters
+
+	// Parse url
 	var parsed, err = url.Parse(urlAddress)
 	if err != nil {
-		return false, make(map[string]string), err
+		return NewEmptyMyURL(), err
 	}
+
 	var path = parsed.Path
 	var match = route.Match(path)
+	if !match {
+		return NewEmptyMyURL(), errors.New("No route match")
+	}
+
+	// Extrac host and port
+	var parsedHost = parsed.Host
+	var splitParsedHost = strings.Split(parsedHost, ":")
+	var onlyHost = ""
+	var onlyPort = 0
+	if len(splitParsedHost) == 2 {
+		onlyHost = splitParsedHost[0]
+		onlyPort, err = strconv.Atoi(splitParsedHost[1])
+		if err != nil {
+			onlyPort = 0
+		}
+	} else {
+		onlyHost = parsedHost
+	}
+
+	var username = ""
+	var password = ""
+
+	if parsed.User != nil {
+		var ok bool
+		username = parsed.User.Username()
+		password, ok = parsed.User.Password()
+		if !ok {
+			password = ""
+		}
+	}
+
 	parameters, err = extractParamsFromRoute(route, path)
-	return match, parameters, err
+
+	var queryParameters = make(URLParameters)
+	for key, value := range parsed.Query() {
+		queryParameters[key] = value
+	}
+
+	return NewMyURL(parsed.Scheme, username, password, onlyHost, onlyPort, parsed.Path, parameters, queryParameters, parsed.Fragment, route), nil
 }
 
 // Path generate path from route

@@ -53,7 +53,9 @@ func TestRemoveRoute(t *testing.T) {
 
 func TestMatchPathByWrongMethod(t *testing.T) {
 	var router = createRouter()
-	var route, params, err = router.MatchPathByMethod("POST", "/user/poltorak-dariusz")
+	var myURL, err = router.MatchPathByMethod("POST", "/user/poltorak-dariusz")
+	var route = myURL.Route
+	var params = myURL.Parameters
 
 	if route != nil {
 		t.Fail()
@@ -209,7 +211,10 @@ func TestUnsecureRouterURLWithFragment(t *testing.T) {
 
 func TestMatchPath(t *testing.T) {
 	var router = createRouter()
-	var route, params, err = router.MatchPath("/user/poltorak-dariusz")
+	var myURL, err = router.MatchPath("/user/poltorak-dariusz")
+	var route = myURL.Route
+	var params = myURL.Parameters
+
 	if route.name != "profile" {
 		t.Fail()
 	}
@@ -229,7 +234,10 @@ func TestMatchPath(t *testing.T) {
 
 func TestMatchInvalidPath(t *testing.T) {
 	var router = createRouter()
-	var route, params, err = router.MatchPath("/user/5")
+	var myURL, err = router.MatchPath("/user/5")
+	var route = myURL.Route
+	var params = myURL.Parameters
+
 	if route != nil {
 		t.Fail()
 	}
@@ -245,7 +253,10 @@ func TestMatchInvalidPath(t *testing.T) {
 
 func TestMatchPathByMethod(t *testing.T) {
 	var router = createRouter()
-	var route, params, err = router.MatchPathByMethod("GET", "/user/poltorak-dariusz")
+	var myURL, err = router.MatchPathByMethod("GET", "/user/poltorak-dariusz")
+	var route = myURL.Route
+	var params = myURL.Parameters
+
 	if route.name != "profile" {
 		t.Fail()
 	}
@@ -265,7 +276,10 @@ func TestMatchPathByMethod(t *testing.T) {
 
 func TestMatchURL(t *testing.T) {
 	var router = createRouter()
-	var route, params, err = router.MatchURL("http://example.com/user/poltorak-dariusz?x=1#test")
+	var myURL, err = router.MatchURL("http://example.com/user/poltorak-dariusz?x=1#test")
+	var route = myURL.Route
+	var params = myURL.Parameters
+
 	if route.name != "profile" {
 		t.Fail()
 	}
@@ -285,7 +299,10 @@ func TestMatchURL(t *testing.T) {
 
 func TestMatchURLWithPort(t *testing.T) {
 	var router = createRouterWithPort()
-	var route, params, err = router.MatchURL("http://example.com:3000/user/poltorak-dariusz?x=1#test")
+	var myURL, err = router.MatchURL("http://example.com:3000/user/poltorak-dariusz?x=1#test")
+	var route = myURL.Route
+	var params = myURL.Parameters
+
 	if route.name != "profile" {
 		t.Fail()
 	}
