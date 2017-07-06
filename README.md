@@ -49,14 +49,14 @@ Too add new route, without requirements:
 
 ```go
 var router = NewMyRouter("http", "madmanlabs.com", 0)
-router.Add("user_profile", make([]string), "/user/{id}", make(map[string]string))
+router.Add("user_profile", []string{}, "/user/{id}", map[string]string{})
 ```
 
 but often we have specific ID format, for example only numbers and we want to force this format on router:
 
 ```go
 var router = NewMyRouter("http", "madmanlabs.com", 0)
-var status, err = router.Add("user_profile", make([]string), "/user/{id}", map[string]string{ "id": "[1-9]+[0-9]*" })
+var route, err = router.Add("user_profile", []string{}, "/user/{id}", map[string]string{"id": "[1-9]+[0-9]*"})
 ```
 
 Adding router will result in bool value (check if route was added) and potential error.
@@ -69,7 +69,7 @@ There is also an edge case when we want router with different host, port etc. In
 
 ```go
 var router = NewMyRouter("http", "madmanlabs.com", 0)
-var status, err = router.AddCustom("user_profile", make([]string), "https", "mylogin:mypassword", "secure.example.com", 440, "/user/{id}", map[string]string{ "id": "[1-9]+[0-9]*" })
+var route, err = router.AddCustom("user_profile", []string{}, "https", "mylogin:mypassword", "secure.example.com", 440, "/user/{id}", map[string]string{ "id": "[1-9]+[0-9]*" })
 ```
 
 ### Setting route method 
@@ -78,7 +78,7 @@ If we want route to work only with specific methods, we can set them while creat
 
 ```go
 var router = NewMyRouter("http", "madmanlabs.com", 0)
-var status, err = router.Add("user_profile", []string{"get", "post"}, "/user/{id}", map[string]string{ "id": "[1-9]+[0-9]*" })
+var route, err = router.Add("user_profile", []string{"get", "post"}, "/user/{id}", map[string]string{ "id": "[1-9]+[0-9]*" })
 ```
 
 ### Removing route
@@ -90,7 +90,7 @@ Removing route is simple. Since all routes need to have internal name, you can j
 ```go
 var router = NewMyRouter("http", "madmanlabs.com", 0)
 // Adding route
-var status, err = router.Add("user_profile", []string{"get", "post"}, "/user/{id}", map[string]string{ "id": "[1-9]+[0-9]*" })
+var route, err = router.Add("user_profile", []string{"get", "post"}, "/user/{id}", map[string]string{ "id": "[1-9]+[0-9]*" })
 // Removing aded route
 router.Remove("user_profile")
 ```
@@ -102,7 +102,7 @@ We can also retrive added routes
 ```go
 var router = NewMyRouter("http", "madmanlabs.com", 0)
 // Adding route
-var status, err = router.Add("user_profile", []string{"get", "post"}, "/user/{id}", map[string]string{ "id": "[1-9]+[0-9]*" })
+var route, err = router.Add("user_profile", []string{"get", "post"}, "/user/{id}", map[string]string{ "id": "[1-9]+[0-9]*" })
 // Get aded route
 var route = router.Get("user_profile")
 ```

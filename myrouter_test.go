@@ -27,8 +27,8 @@ func createRouterWithPort() *MyRouter {
 
 func TestAddInvalidRoute(t *testing.T) {
 	var router = createRouter()
-	var success, err = router.Add("error", []string{}, "", make(map[string]string))
-	if success {
+	var route, err = router.Add("error", []string{}, "", make(map[string]string))
+	if route != nil {
 		t.Fail()
 	}
 

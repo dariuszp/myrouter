@@ -63,7 +63,7 @@ type MyRouter struct {
 // methods - list of methods that works with this route
 // path - path after the host and port
 // requirements - map of regexp patterns (as strings) for route params
-func (router *MyRouter) Add(name string, methods []string, path string, requirements Requirements) (bool, error) {
+func (router *MyRouter) Add(name string, methods []string, path string, requirements Requirements) (*Route, error) {
 	return router.AddCustom(name, methods, router.defaultSchema, router.defaultUnsecureUser, router.defaultHost, router.defaultPort, path, requirements)
 }
 
@@ -75,26 +75,26 @@ func (router *MyRouter) Add(name string, methods []string, path string, requirem
 // port - leave empty if You don't want to change port
 // path - path after the host and port
 // requirements - map of regexp patterns (as strings) for route params
-func (router *MyRouter) AddCustom(name string, methods []string, scheme string, unsecureUser string, host string, port int, path string, requirements Requirements) (bool, error) {
+func (router *MyRouter) AddCustom(name string, methods []string, scheme string, unsecureUser string, host string, port int, path string, requirements Requirements) (*Route, error) {
 	var err error
 	var route *Route
 	var _, ok = router.routes[name]
 	if ok {
 		err = errors.New(strings.Join([]string{"Route name already registered", name}, " "))
-		return false, err
+		return nil, err
 	}
 	for _, method := range methods {
 		method = strings.ToLower(method)
 		if !arrayContainsStringNoCase(SupportedMethods, method) {
 			var err = errors.New(strings.Join([]string{"Unsupported method", method}, " "))
-			return false, err
+			return nil, err
 		}
 	}
 
 	route, err = NewRoute(name, methods, scheme, host, port, path, requirements)
 
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 
 	route.unsecureUser = unsecureUser
@@ -105,7 +105,7 @@ func (router *MyRouter) AddCustom(name string, methods []string, scheme string, 
 	}
 	router.routes[name] = route
 
-	return true, nil
+	return route, nil
 }
 
 // Remove remove route by name
@@ -143,8 +143,8 @@ func (router *MyRouter) MatchURL(url string) (*MyURL, error) {
 }
 
 // Match is an alias for MatchURL
-func (router *MyRouter) Match(url string) (*MyURL, error) {
-	return router.MatchURL(url)
+func (router *MyRouter) Match(method, string, url string) (*MyURL, error) {
+	return router.MatchURLByMethod(method, url)
 }
 
 // MatchPathByMethod find route that match specified path filtered by method
