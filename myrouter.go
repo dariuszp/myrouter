@@ -99,9 +99,16 @@ func (router *MyRouter) AddCustom(name string, methods []string, scheme string, 
 
 	route.UnsecureUser = unsecureUser
 
-	for _, method := range methods {
-		method = strings.ToLower(method)
-		router.verbs[method][name] = route
+	if len(methods) > 0 {
+		for _, method := range methods {
+			method = strings.ToLower(method)
+			router.verbs[method][name] = route
+		}
+	} else {
+		for method := range router.verbs {
+			method = strings.ToLower(method)
+			router.verbs[method][name] = route
+		}
 	}
 	router.routes[name] = route
 
@@ -143,7 +150,7 @@ func (router *MyRouter) MatchURL(url string) (*MyURL, error) {
 }
 
 // Match is an alias for MatchURL
-func (router *MyRouter) Match(method, string, url string) (*MyURL, error) {
+func (router *MyRouter) Match(method string, url string) (*MyURL, error) {
 	return router.MatchURLByMethod(method, url)
 }
 

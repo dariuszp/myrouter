@@ -78,11 +78,19 @@ func (route *Route) MatchURL(urlAddress string) bool {
 	if !strings.EqualFold(parsed.Scheme, route.Scheme) {
 		return false
 	}
+
+	var parsedHost = parsed.Host
 	var host = route.Host
 	if route.Port > 0 {
 		host = strings.Join([]string{host, strconv.Itoa(route.Port)}, ":")
+	} else {
+		var split = strings.Split(parsedHost, ":")
+		if len(split) > 0 {
+			parsedHost = split[0]
+		}
 	}
-	if !strings.EqualFold(parsed.Host, host) {
+
+	if !strings.EqualFold(parsedHost, host) {
 		return false
 	}
 	return route.MatchRegexp.MatchString(parsed.Path)
@@ -144,7 +152,20 @@ func (route *Route) ParsePath(path string) (*MyURL, error) {
 		queryParameters[key] = value
 	}
 
-	return NewMyURL("", "", "", "", 0, path, parameters, queryParameters, parsed.Fragment, route), nil
+	var username = ""
+	var password = ""
+
+	if len(route.UnsecureUser) > 0 {
+		var split = strings.Split(route.UnsecureUser, ":")
+		if len(split) == 2 {
+			username = split[0]
+			password = split[1]
+		} else {
+			username = route.UnsecureUser
+		}
+	}
+
+	return NewMyURL(route.Scheme, username, password, route.Host, route.Port, path, parameters, queryParameters, parsed.Fragment, route), nil
 }
 
 // ParseURL will parse path, check for a match and then extract route parameters

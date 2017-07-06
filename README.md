@@ -25,6 +25,8 @@ I do not bundle this router with any manager for handlers, controllers or whatev
 
 This part will explain how to use "My Router"
 
+## Router
+
 ### Creating router
 
 > func NewMyRouter(scheme string, host string, port int) *MyRouter
@@ -40,6 +42,8 @@ In case you want port in Your URL, just set value above 0
 ```go
 var router = NewMyRouter("http", "madmanlabs.com", 443)
 ```
+
+## Route
 
 ### Adding new route
 

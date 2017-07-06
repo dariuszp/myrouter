@@ -303,6 +303,16 @@ func TestMatchURLWithPort(t *testing.T) {
 	var route = myURL.Route
 	var params = myURL.Parameters
 
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+
+	if route == nil {
+		t.Fail()
+		return
+	}
+
 	if route.Name != "profile" {
 		t.Fail()
 	}
@@ -312,10 +322,6 @@ func TestMatchURLWithPort(t *testing.T) {
 	}
 
 	if params["slug"] != "poltorak-dariusz" {
-		t.Fail()
-	}
-
-	if err != nil {
 		t.Fail()
 	}
 }
