@@ -127,7 +127,11 @@ then we can try to match url he used with our service:
     var result, err = router.Match("GET", "http:/madmanlabs.com/user/poltorak-dariusz?tab=contacts")
 ```
 
-This will create instance of MyURL. MyURL looks like this:
+This will create instance of MyURL (types are at the bottom of readme). 
+
+## Types
+
+#### MyURL 
 
 | Scheme     | string              | For example http, https etc.                                                                                                                                           |
 |------------|---------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -141,7 +145,7 @@ This will create instance of MyURL. MyURL looks like this:
 | Fragment   | string              | Everything after hash ("#")                                                                                                                                            |
 | Route      | *Route              | Instance of added route                                                                                                                                                |
 
-Route looks like this:
+#### Route 
 
 | Name                                                                                    | string                    | Name of the route                                                                                                                                                          |
 |-----------------------------------------------------------------------------------------|---------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
