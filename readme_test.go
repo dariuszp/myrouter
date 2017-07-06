@@ -152,3 +152,21 @@ func TestReadmeMatch(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestReadmeGenerator(t *testing.T) {
+	var router = NewMyRouter("http", "example.com", 3000)
+
+	router.Add("dashboard", []string{}, "/dashboard", make(map[string]string))
+	router.Add("profile", []string{"GET"}, "/user/{slug}", map[string]string{"slug": "[a-z\\-]+"})
+	router.Add("message", []string{"POST", "PUT"}, "/message/{channel}/{type}", map[string]string{"type": "error|success"})
+
+	var url, err = router.URL("message", map[string][]string{"message": []string{"sms"}, "type": []string{"warning"}})
+
+	if err != nil {
+		t.Fail()
+	}
+
+	if url != "http://example.com:30000/message/sms/warning" {
+		t.Fail()
+	}
+}

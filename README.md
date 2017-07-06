@@ -131,7 +131,63 @@ then we can try to match url he used with our service:
     var result, err = router.Match("GET", "http:/madmanlabs.com/user/poltorak-dariusz?tab=contacts")
 ```
 
-This will create instance of MyURL (types are at the bottom of readme). 
+This will create instance of MyURL (types are at the bottom of readme) and return optional error. If error is nil, you will have access to: 
+
+| Scheme     | string              | For example http, https etc.                                                                                                                                           |
+|------------|---------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| User       | string              | Username, if we use basic auth and provide "dariusz:poltorak", user will be "dariusz"                                                                                  |
+| Password   | string              | If we use basic auth and provide "dariusz:poltorak", password will be "poltorak"                                                                                       |
+| Host       | string              | For example "madmanlabs.com"                                                                                                                                           |
+| Port       | int                 | Default is 0. When port is provided, you will get exact number                                                                                                         |
+| Path       | string              | For example "/user/poltorak-dariusz"                                                                                                                                   |
+| Parameters | map[string]string   | URL parameters, when your pattern is "/user/{slug}" and You provide path "/user/dariusz-poltorak" you will get result: map[string]string{ "slug": "dariusz-poltorak" } |
+| Query      | map[string][]string | Same as route parameters but query contains arrays in values. Mostly because GET method allow you to provide arrays in query string                                    |
+| Fragment   | string              | Everything after hash ("#")                                                                                                                                            |
+| Route      | *Route              | Instance of added route                                                                                                                                                |
+
+#### Other type of matches
+
+Sometimes you just want to match path, in that is the case, just use
+
+```go
+    var result, err = router.MatchPath("/user/poltorak-dariusz?tab=contacts")
+```
+
+or just orl while ignoring the method
+
+```go
+    var result, err = router.MatchURL("http:/madmanlabs.com/user/poltorak-dariusz?tab=contacts")
+```
+
+Match is alias to MatchURLByMethod, you can call it directly:
+
+```go
+    var result, err = router.MatchURLByMethod("GET", "http:/madmanlabs.com/user/poltorak-dariusz?tab=contacts")
+```
+
+You can do the same with the patch
+
+```go
+    var result, err = router.MatchPathByMethod("GET", "/user/poltorak-dariusz?tab=contacts")
+```
+
+### Generating Path / URL
+
+The reason we name our routes is that we also want to generate addresses based on that name, for example:
+
+```go
+    var router = NewMyRouter("http", "example.com", 3000)
+
+    router.Add("dashboard", []string{}, "/dashboard", make(map[string]string))
+    router.Add("profile", []string{"GET"}, "/user/{slug}", map[string]string{"slug": "[a-z\\-]+"})
+    router.Add("message", []string{"POST", "PUT"}, "/message/{channel}/{type}", map[string]string{"type": "error|success"})
+```
+
+Now we want to generate path to message:
+
+```go
+    router.Generate("message", map[string][]string{ "message": []string{"sms"}, "type": []string{"warning"} })
+```
 
 ## Types
 
