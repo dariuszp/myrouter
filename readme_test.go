@@ -187,4 +187,13 @@ func TestReadmeGenerator(t *testing.T) {
 		fmt.Println(strings.Join([]string{"ACTUAL:", url}, " "))
 		t.Fail()
 	}
+
+	var path string
+	path, err = router.Path("message", map[string][]string{"channel": []string{"sms"}, "type": []string{"error"}, "ids": []string{"5", "6"}})
+	expect = "/message/sms/error?ids=5&ids=6"
+	if path != expect {
+		fmt.Println(strings.Join([]string{"EXPECT:", expect}, " "))
+		fmt.Println(strings.Join([]string{"ACTUAL:", path}, " "))
+		t.Fail()
+	}
 }

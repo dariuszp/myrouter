@@ -212,6 +212,16 @@ Now err is nil and url equals:
 
 > http://example.com:3000/message/sms/error?ids=5&ids=6
 
+Usually when You just want internal url in your system, you only need path, not entire url. For that you have:
+
+```go
+    var path, err = router.Path("message", map[string][]string{"channel": []string{"sms"}, "type": []string{"error"}, "ids": []string{"5", "6"}})
+```
+
+Now err is nil and url equals:
+
+> /message/sms/error?ids=5&ids=6
+
 
 ## Types
 
