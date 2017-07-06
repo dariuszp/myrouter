@@ -74,7 +74,7 @@ func TestGetRouteByName(t *testing.T) {
 	var router = createRouter()
 	var route = router.Get("profile")
 
-	if route.name != "profile" {
+	if route.Name != "profile" {
 		t.Fail()
 	}
 }
@@ -215,7 +215,7 @@ func TestMatchPath(t *testing.T) {
 	var route = myURL.Route
 	var params = myURL.Parameters
 
-	if route.name != "profile" {
+	if route.Name != "profile" {
 		t.Fail()
 	}
 
@@ -257,7 +257,7 @@ func TestMatchPathByMethod(t *testing.T) {
 	var route = myURL.Route
 	var params = myURL.Parameters
 
-	if route.name != "profile" {
+	if route.Name != "profile" {
 		t.Fail()
 	}
 
@@ -280,7 +280,7 @@ func TestMatchURL(t *testing.T) {
 	var route = myURL.Route
 	var params = myURL.Parameters
 
-	if route.name != "profile" {
+	if route.Name != "profile" {
 		t.Fail()
 	}
 
@@ -303,7 +303,7 @@ func TestMatchURLWithPort(t *testing.T) {
 	var route = myURL.Route
 	var params = myURL.Parameters
 
-	if route.name != "profile" {
+	if route.Name != "profile" {
 		t.Fail()
 	}
 

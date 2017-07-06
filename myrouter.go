@@ -97,7 +97,7 @@ func (router *MyRouter) AddCustom(name string, methods []string, scheme string, 
 		return nil, err
 	}
 
-	route.unsecureUser = unsecureUser
+	route.UnsecureUser = unsecureUser
 
 	for _, method := range methods {
 		method = strings.ToLower(method)
@@ -115,7 +115,7 @@ func (router *MyRouter) Remove(name string) bool {
 		return false
 	}
 
-	for _, method := range router.routes[name].methods {
+	for _, method := range router.routes[name].Methods {
 		method = strings.ToLower(method)
 		delete(router.verbs[method], name)
 	}
@@ -179,7 +179,7 @@ func (router *MyRouter) Path(name string, parameters URLParameters) (string, err
 	if route == nil {
 		return "", errors.New(strings.Join([]string{"Invalid route name:", name}, " "))
 	}
-	return route.Path(parameters)
+	return route.GeneratePath(parameters)
 }
 
 // PathWithFragment will get route by name and generate path for it with anchor
@@ -188,7 +188,7 @@ func (router *MyRouter) PathWithFragment(name string, parameters URLParameters, 
 	if route == nil {
 		return "", errors.New(strings.Join([]string{"Invalid route name:", name}, " "))
 	}
-	return route.PathWithFragment(parameters, fragment)
+	return route.GeneratePathWithFragment(parameters, fragment)
 }
 
 // URL will get route by name and generate url for it
@@ -197,7 +197,7 @@ func (router *MyRouter) URL(name string, parameters URLParameters) (string, erro
 	if route == nil {
 		return "", errors.New(strings.Join([]string{"Invalid route name:", name}, " "))
 	}
-	return route.URL(parameters)
+	return route.GenerateURL(parameters)
 }
 
 // URLWithFragment will get route by name and generate url for it
@@ -206,7 +206,7 @@ func (router *MyRouter) URLWithFragment(name string, parameters URLParameters, f
 	if route == nil {
 		return "", errors.New(strings.Join([]string{"Invalid route name:", name}, " "))
 	}
-	return route.URLWithFragment(parameters, fragment)
+	return route.GenerateURLWithFragment(parameters, fragment)
 }
 
 // UnsecureURL will get route by name and generate url for it

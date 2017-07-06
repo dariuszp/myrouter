@@ -17,37 +17,37 @@ func TestRouteCreation(t *testing.T) {
 		t.Fail()
 	}
 
-	if route.name != "test" {
+	if route.Name != "test" {
 		fmt.Println("Invalid route name")
 		t.Fail()
 	}
 
-	if !arrayCompareString(route.methods, methods) {
+	if !arrayCompareString(route.Methods, methods) {
 		fmt.Println("Route methods does not match")
 		t.Fail()
 	}
 
-	if route.scheme != "https" || route.host != "example.com" || route.port != 0 {
+	if route.Scheme != "https" || route.Host != "example.com" || route.Port != 0 {
 		fmt.Println("Invalid route base url")
 		t.Fail()
 	}
 
-	if route.path != "/api/user/{id}" {
+	if route.Path != "/api/user/{id}" {
 		fmt.Println("Invalid path")
 		t.Fail()
 	}
 
-	if route.matchRegexp.String() != "/api/user/([1-9]+[0-9]*)" {
+	if route.MatchRegexp.String() != "/api/user/([1-9]+[0-9]*)" {
 		fmt.Println("Invalid regexp")
 		t.Fail()
 	}
 
-	if len(route.parameters) != 1 {
+	if len(route.Parameters) != 1 {
 		fmt.Println("Invalid parameters count")
 		t.Fail()
 	}
 
-	if route.parameters[0] != "id" {
+	if route.Parameters[0] != "id" {
 		fmt.Println("Invalid parameters")
 		t.Fail()
 	}
@@ -64,32 +64,32 @@ func TestRouteCreationWithNoParams(t *testing.T) {
 		t.Fail()
 	}
 
-	if route.name != "test" {
+	if route.Name != "test" {
 		fmt.Println("Invalid route name")
 		t.Fail()
 	}
 
-	if !arrayCompareString(route.methods, methods) {
+	if !arrayCompareString(route.Methods, methods) {
 		fmt.Println("Route methods does not match")
 		t.Fail()
 	}
 
-	if route.scheme != "https" || route.host != "example.com" || route.port != 0 {
+	if route.Scheme != "https" || route.Host != "example.com" || route.Port != 0 {
 		fmt.Println("Invalid route base url")
 		t.Fail()
 	}
 
-	if route.path != "/api/user" {
+	if route.Path != "/api/user" {
 		fmt.Println("Invalid path")
 		t.Fail()
 	}
 
-	if route.matchRegexp.String() != "/api/user" {
+	if route.MatchRegexp.String() != "/api/user" {
 		fmt.Println("Invalid regexp")
 		t.Fail()
 	}
 
-	if len(route.parameters) != 0 {
+	if len(route.Parameters) != 0 {
 		fmt.Println("Invalid parameters count")
 		t.Fail()
 	}
@@ -106,7 +106,7 @@ func TestURL(t *testing.T) {
 		t.Fail()
 	}
 
-	url, err = route.URL(map[string][]string{"id": []string{"5"}})
+	url, err = route.GenerateURL(map[string][]string{"id": []string{"5"}})
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -129,7 +129,7 @@ func TestURLWithNoParams(t *testing.T) {
 		t.Fail()
 	}
 
-	url, err = route.URL(map[string][]string{"id": []string{"5"}})
+	url, err = route.GenerateURL(map[string][]string{"id": []string{"5"}})
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -147,14 +147,14 @@ func TestURLWithUser(t *testing.T) {
 	var url string
 	var methods = []string{"get", "post"}
 	route, err = NewRoute("test", methods, "https", "example.com", 0, "/api/user", map[string]string{"id": "[1-9]+[0-9]*"})
-	route.unsecureUser = "darek:poltorak"
+	route.UnsecureUser = "darek:poltorak"
 
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
 	}
 
-	url, err = route.URL(map[string][]string{"id": []string{"5"}})
+	url, err = route.GenerateURL(map[string][]string{"id": []string{"5"}})
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()

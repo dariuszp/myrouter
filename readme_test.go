@@ -59,7 +59,7 @@ func TestAddCustomUserProfile(t *testing.T) {
 		t.Fail()
 	}
 
-	if route.name != "user_profile" {
+	if route.Name != "user_profile" {
 		t.Fail()
 	}
 }
@@ -74,7 +74,7 @@ func TestAddRouteWithMetods(t *testing.T) {
 		t.Fail()
 	}
 
-	if route.name != "user_profile" {
+	if route.Name != "user_profile" {
 		t.Fail()
 	}
 }

@@ -28,15 +28,15 @@ func extractParamsFromRoute(route *Route, path string) (PathParameters, error) {
 	var name, value string
 	var err error
 
-	var parameters = route.matchRegexp.FindAllStringSubmatch(path, -1)
+	var parameters = route.MatchRegexp.FindAllStringSubmatch(path, -1)
 	var countMatch = true
-	if len(parameters) == 0 || (len(parameters[0]) != (len(route.parameters) + 1)) {
+	if len(parameters) == 0 || (len(parameters[0]) != (len(route.Parameters) + 1)) {
 		countMatch = false
 		err = errors.New("Parameters count does not match")
 	}
 
-	for i := 0; i < len(route.parameters); i++ {
-		name = route.parameters[i]
+	for i := 0; i < len(route.Parameters); i++ {
+		name = route.Parameters[i]
 		if countMatch {
 			value = parameters[0][i+1]
 		} else {

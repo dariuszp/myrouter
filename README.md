@@ -110,6 +110,37 @@ var route = router.Get("user_profile")
 ### Matching HTTP path against router
 
 Ok, we have our router, we added bunch of routes, how do we know what route was used by the user?
+Let say that our user is calling us using url:
+
+> GET http:/madmanlabs.com/user/poltorak-dariusz?tab=contacts
+
+We need our router to be ready for him:
+
+```go
+var router = NewMyRouter("http", "madmanlabs.com", 0)
+var _, err = router.Add("user_profile", []string{}, "/user/{slug}", map[string]string{ "slug": "[a-z]+[a-z\\-]*" })
+```
+
+then we can try to match url he used with our service:
+
+```go
+    var result, err = router.Match("GET", "http:/madmanlabs.com/user/poltorak-dariusz?tab=contacts")
+```
+
+This will create instance of MyURL. MyURL looks like this:
+
+| Scheme     | string              | For example http, https etc.                                                                                                                                           |
+|------------|---------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| User       | string              | Username, if we use basic auth and provide "dariusz:poltorak", user will be "dariusz"                                                                                  |
+| Password   | string              | If we use basic auth and provide "dariusz:poltorak", password will be "poltorak"                                                                                       |
+| Host       | string              | For example "madmanlabs.com"                                                                                                                                           |
+| Port       | int                 | Default is 0. When port is provided, you will get exact number                                                                                                         |
+| Path       | string              | For example "/user/poltorak-dariusz"                                                                                                                                   |
+| Parameters | map[string]string   | URL parameters, when your pattern is "/user/{slug}" and You provide path "/user/dariusz-poltorak" you will get result: map[string]string{ "slug": "dariusz-poltorak" } |
+| Query      | map[string][]string | Same as route parameters but query contains arrays in values. Mostly because GET method allow you to provide arrays in query string                                    |
+| Fragment   | string              | Everything after hash ("#")                                                                                                                                            |
+| Route      | *Route              | Instance of added route                                                                                                                                                |
+
 
 
 
