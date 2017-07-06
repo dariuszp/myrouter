@@ -50,16 +50,16 @@ func NewRoute(name string, methods []string, scheme string, host string, port in
 }
 
 // SetMethods replace list of methods
-func (route *Route) SetMethods(methods []string) (*Route, bool) {
+func (route *Route) SetMethods(methods []string) (bool, error) {
 	if !arrayCompareStringNoCase(SupportedMethods, methods) {
-		return route, false
+		return false, errors.New("One of the methods is not supported")
 	}
 	var result []string
 	for _, value := range methods {
 		result = append(result, strings.ToLower(value))
 	}
 	route.Methods = result
-	return route, true
+	return true, nil
 }
 
 // Match path to find route
@@ -229,16 +229,26 @@ func (route *Route) GenerateURLWithFragment(parameters URLParameters, fragment s
 	return strings.Join([]string{url, fragment}, "#"), nil
 }
 
-// UnsecureURL generate path from route with user
-func (route *Route) UnsecureURL(user string, parameters URLParameters) (string, error) {
+// GenerateUnsecureURL generate path from route with user
+func (route *Route) GenerateUnsecureURL(user string, parameters URLParameters) (string, error) {
 	return generateURL(route.Scheme, user, route.Host, route.Port, route.Path, parameters, route.Requirements)
 }
 
-// UnsecureURLWithFragment generate path from route and add anchor at the end with user
-func (route *Route) UnsecureURLWithFragment(user string, parameters URLParameters, fragment string) (string, error) {
+// GenerateUnsecureURLWithFragment generate path from route and add anchor at the end with user
+func (route *Route) GenerateUnsecureURLWithFragment(user string, parameters URLParameters, fragment string) (string, error) {
 	var url, err = generateURL(route.Scheme, user, route.Host, route.Port, route.Path, parameters, route.Requirements)
 	if err != nil {
 		return "", err
 	}
 	return strings.Join([]string{url, fragment}, "#"), nil
+}
+
+// Generate is alias for GeneratePath
+func (route *Route) Generate(parameters URLParameters) (string, error) {
+	return route.GeneratePath(parameters)
+}
+
+// GenerateWithFragment is alias for GeneratePathWithFragment
+func (route *Route) GenerateWithFragment(parameters URLParameters, fragment string) (string, error) {
+	return route.GeneratePathWithFragment(parameters, fragment)
 }

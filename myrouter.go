@@ -215,7 +215,7 @@ func (router *MyRouter) UnsecureURL(name string, user string, parameters URLPara
 	if route == nil {
 		return "", errors.New(strings.Join([]string{"Invalid route name:", name}, " "))
 	}
-	return route.UnsecureURL(user, parameters)
+	return route.GenerateUnsecureURL(user, parameters)
 }
 
 // UnsecureURLWithFragment will get route by name and generate url for it
@@ -224,7 +224,7 @@ func (router *MyRouter) UnsecureURLWithFragment(name string, user string, parame
 	if route == nil {
 		return "", errors.New(strings.Join([]string{"Invalid route name:", name}, " "))
 	}
-	return route.UnsecureURLWithFragment(user, parameters, fragment)
+	return route.GenerateUnsecureURLWithFragment(user, parameters, fragment)
 }
 
 func match(router *MyRouter, list Routes, path string) (*MyURL, error) {
