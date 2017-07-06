@@ -186,8 +186,32 @@ The reason we name our routes is that we also want to generate addresses based o
 Now we want to generate path to message:
 
 ```go
-    router.Generate("message", map[string][]string{ "message": []string{"sms"}, "type": []string{"warning"} })
+    var url, err = router.URL("message", map[string][]string{"channel": []string{"sms"}, "type": []string{"error"}})
 ```
+
+Now err is nil and url equals:
+
+> http://example.com:3000/message/sms/error
+
+Remember that each route param can be mentioned in requirements. Default requirement for route value is NOT to contain slash ("/", that means "[^/]"). Everything else will pass. So doing something like this:
+
+```go
+var url, err = router.URL("message", map[string][]string{"channel": []string{"sms"}, "type": []string{"warning"}})
+```
+
+Will result in error because "type" accept only "error or success" with regexp "error|success".
+
+
+You can also notice the fact that you provide parameters in different format. You use map[string][]string instead of map[string]string. That's because parameters you use must be compatibile with query string format. Because unused parameters go to query string, like this:
+
+```go
+    var url, err = router.URL("message", map[string][]string{"channel": []string{"sms"}, "type": []string{"error"}, "ids": []string{"5", "6"}})
+```
+
+Now err is nil and url equals:
+
+> http://example.com:3000/message/sms/error?ids=5&ids=6
+
 
 ## Types
 

@@ -2,6 +2,7 @@ package myrouter
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 )
 
@@ -160,13 +161,30 @@ func TestReadmeGenerator(t *testing.T) {
 	router.Add("profile", []string{"GET"}, "/user/{slug}", map[string]string{"slug": "[a-z\\-]+"})
 	router.Add("message", []string{"POST", "PUT"}, "/message/{channel}/{type}", map[string]string{"type": "error|success"})
 
-	var url, err = router.URL("message", map[string][]string{"message": []string{"sms"}, "type": []string{"warning"}})
+	var url, err = router.URL("message", map[string][]string{"channel": []string{"sms"}, "type": []string{"error"}})
+
+	var expect = "http://example.com:3000/message/sms/error"
 
 	if err != nil {
 		t.Fail()
 	}
 
-	if url != "http://example.com:30000/message/sms/warning" {
+	if url != expect {
+		fmt.Println(strings.Join([]string{"EXPECT:", expect}, " "))
+		fmt.Println(strings.Join([]string{"ACTUAL:", url}, " "))
+		t.Fail()
+	}
+
+	_, err = router.URL("message", map[string][]string{"channel": []string{"sms"}, "type": []string{"warning"}})
+	if err == nil {
+		t.Fail()
+	}
+
+	url, err = router.URL("message", map[string][]string{"channel": []string{"sms"}, "type": []string{"error"}, "ids": []string{"5", "6"}})
+	expect = "http://example.com:3000/message/sms/error?ids=5&ids=6"
+	if url != expect {
+		fmt.Println(strings.Join([]string{"EXPECT:", expect}, " "))
+		fmt.Println(strings.Join([]string{"ACTUAL:", url}, " "))
 		t.Fail()
 	}
 }
