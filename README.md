@@ -196,7 +196,7 @@ Now err is nil and url equals:
 Remember that each route param can be mentioned in requirements. Default requirement for route value is NOT to contain slash ("/", that means "[^/]"). Everything else will pass. So doing something like this:
 
 ```go
-var url, err = router.URL("message", map[string][]string{"channel": []string{"sms"}, "type": []string{"warning"}})
+    var url, err = router.URL("message", map[string][]string{"channel": []string{"sms"}, "type": []string{"warning"}})
 ```
 
 Will result in error because "type" accept only "error or success" with regexp "error|success".
