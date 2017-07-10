@@ -1,5 +1,9 @@
 # MyRouter
 
+## WARNING
+
+> This package is in heavy development, it's very unstable
+
 ## Requirements
 
 Go 1.8
