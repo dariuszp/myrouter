@@ -144,6 +144,9 @@ This will create instance of MyURL (types are at the bottom of readme) and retur
 | Query      | map[string][]string | Same as route parameters but query contains arrays in values. Mostly because GET method allow you to provide arrays in query string                                    |
 | Fragment   | string              | Everything after hash ("#")                                                                                                                                            |
 | Route      | *Route              | Instance of added route                                                                                                                                                |
+#### No match
+
+**In case you have no match, you will still get instance of MyURL but second parameter will contain error instead of nil.**
 
 #### Other type of matches
 
@@ -170,6 +173,9 @@ You can do the same with the patch
 ```go
     var result, err = router.MatchPathByMethod("GET", "/user/poltorak-dariusz?tab=contacts")
 ```
+
+**There is also simple, default Match(method, url) method. It's an alias to MatchURLByMethod(method, url)**
+
 
 ### Generating Path / URL
 
@@ -222,6 +228,8 @@ Now err is nil and url equals:
 
 > /message/sms/error?ids=5&ids=6
 
+Each generator return path/url and error. That is because there are few instances where you can get empty url/path and error. For example if You have route that 
+request parameter "slug" containing letters only, if there is any other character, url will be empty and error will be returned.
 
 ## Types
 
