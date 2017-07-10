@@ -1,5 +1,8 @@
 # MyRouter
 
+[![Build Status](https://travis-ci.org/dariuszp/myrouter.png?branch=master)](https://travis-ci.org/dariuszp/myrouter) Master
+[![Build Status](https://travis-ci.org/dariuszp/myrouter.png?branch=develop)](https://travis-ci.org/dariuszp/myrouter) Develop
+
 ## WARNING
 
 > This package is in heavy development, it's very unstable
